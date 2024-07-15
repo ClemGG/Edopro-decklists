@@ -12,3 +12,6 @@ replay/_LastReplay.yrpX
 *.yrpX
 *.yrp
 config/system.conf
+repositories/lflists/
+repositories/delta-puppet/
+puzzles/Canon collection/
