@@ -11,6 +11,7 @@ replay/_LastReplay.yrp
 replay/_LastReplay.yrpX
 *.yrpX
 *.yrp
+*.log
 config/system.conf
 repositories/lflists/
 repositories/delta-puppet/
