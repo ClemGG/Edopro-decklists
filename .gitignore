@@ -9,8 +9,8 @@ replay/_LastReplay.yrpX
 replay/_LastReplay.yrp
 replay/_LastReplay.yrp
 replay/_LastReplay.yrpX
-*.yrpX
-*.yrp
+#*.yrpX
+#*.yrp
 *.log
 config/system.conf
 repositories/lflists/
