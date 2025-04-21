@@ -1,5 +1,5 @@
 --深淵の獣アルバ・ロス
---The Byssted Alba Los
+--The Bystial Alba Los
 --scripted by Naim
 local s,id=GetID()
 function s.initial_effect(c)
@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetRange(LOCATION_HAND|LOCATION_GRAVE)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -29,7 +29,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetCondition(function(e) return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL+1) end)
-	e2:SetTarget(function(e,c) return c:IsType(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) and (c:IsType(TYPE_EFFECT) or c:IsOriginalType(TYPE_EFFECT)) end)
+	e2:SetTarget(function(e,c) return c:IsType(TYPE_RITUAL|TYPE_FUSION|TYPE_SYNCHRO|TYPE_XYZ|TYPE_LINK) and (c:IsType(TYPE_EFFECT) or c:IsOriginalType(TYPE_EFFECT)) end)
 	c:RegisterEffect(e2)
 	--Banish all face-down cards in the Extra Decks
 	local e3=Effect.CreateEffect(c)
@@ -43,9 +43,9 @@ function s.initial_effect(c)
 	e3:SetOperation(s.rmvop)
 	c:RegisterEffect(e3)
 end
-s.listed_series={0x189}
+s.listed_series={SET_BYSTIAL}
 function s.cfilter(c)
-	return c:IsSetCard(0x189) and c:IsReleasable()
+	return c:IsSetCard(SET_BYSTIAL) and c:IsReleasable()
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -87,8 +87,8 @@ function s.rmvop(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		local fid=c:GetFieldID()
 		local og=Duel.GetOperatedGroup()
-		for oc in aux.Next(og) do
-			oc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2,fid)
+		for oc in og:Iter() do
+			oc:RegisterFlagEffect(id,RESETS_STANDARD_PHASE_END,0,2,fid)
 		end
 		og:KeepAlive()
 		--Return the banished cards to the Extra Deck
@@ -102,7 +102,7 @@ function s.rmvop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(og)
 		e1:SetCondition(s.rcond)
 		e1:SetOperation(s.roper)
-		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetReset(RESET_PHASE|PHASE_END|RESET_OPPO_TURN)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
@@ -121,5 +121,5 @@ end
 function s.roper(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local rg=g:Filter(s.rfilter,nil,e:GetLabel())
-	Duel.SendtoDeck(rg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_RETURN)
+	Duel.SendtoDeck(rg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT|REASON_RETURN)
 end

@@ -1,5 +1,5 @@
 -- 不屈の世紀末獣戦士
---The Indomitable Post-Apocalyptic Beast-Warrior
+--Apocalypse - The Unstoppable Beast-Warrior
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -38,6 +38,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		--Piercing
-		g:GetFirst():AddPiercing(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,c)
+		g:GetFirst():AddPiercing(RESETS_STANDARD_PHASE_END,c)
 	end
 end

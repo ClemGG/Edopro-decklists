@@ -1,8 +1,10 @@
---Gatekeeping Gargoyle
+--門衛のガーゴイル
+--Gate Gargoyle
 local s,id=GetID()
 function s.initial_effect(c)
 	--Make 1 of your monsters gain 1 level
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -29,7 +31,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.HintSelection(g)
 			local tc=g:GetFirst()
-			tc:UpdateLevel(1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,c)
+			tc:UpdateLevel(1,RESETS_STANDARD_PHASE_END,c)
 		end
 	end
 end

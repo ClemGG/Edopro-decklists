@@ -16,6 +16,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1)
+	e1:SetCondition(function(_,tp) return Duel.IsTurnPlayer(tp) and Duel.GetCurrentPhase()<PHASE_MAIN2 end)
 	e1:SetTarget(s.atktg)
 	e1:SetOperation(s.atkop)
 	c:RegisterEffect(e1)
@@ -33,13 +34,15 @@ function s.initial_effect(c)
 	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0x17c}
+s.listed_series={SET_SCARECLAW}
 s.listed_names={CARD_VISAS_STARFROST}
 function s.atkfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x17c) or c:IsCode(CARD_VISAS_STARFROST)) and not c:IsHasEffect(EFFECT_CANNOT_ATTACK)
+	return c:IsFaceup() and (c:IsSetCard(SET_SCARECLAW) or c:IsCode(CARD_VISAS_STARFROST))
+		and not c:IsLinkMonster() and not c:IsHasEffect(EFFECT_CANNOT_ATTACK)
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_APPLYTO)
 	Duel.SelectTarget(tp,s.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
@@ -53,14 +56,14 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(function(_,c) return c:GetAttack()>c:GetDefense() and 0 or 1 end)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESETS_STANDARD_PHASE_END)
 	tc:RegisterEffect(e1)
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x17c) and c:IsInExtraMZone()
+	return c:IsFaceup() and c:IsSetCard(SET_SCARECLAW)
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EMZONE,0,1,nil)
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

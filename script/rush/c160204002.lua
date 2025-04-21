@@ -1,11 +1,11 @@
---メタリオン・ヴリトラスター 
---Metallion Vritrastar
+--メタリオン・ヴリトラスター
+--Metarion Vritrastar
 local s,id=GetID()
 function s.initial_effect(c)
-	--fusion material
+	--Fusion Summon
 	c:EnableReviveLimit()
 	Fusion.AddProcMix(c,true,true,CARD_IMAGINARY_ACTOR,160204008)
-	--position
+	--Fhange the position of your opponent's monster
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_POSITION)
@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.postg)
 	e1:SetOperation(s.posop)
 	c:RegisterEffect(e1)
-	--Destroy Dragon
+	--Destroy Dragon monsters
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_DESTROY)
@@ -37,20 +37,8 @@ function s.posop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsCanChangePositionRush,tp,0,LOCATION_MZONE,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
-		if g:GetFirst():IsAttackPos() then
-			Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
-		elseif g:GetFirst():IsPosition(POS_FACEDOWN_DEFENSE) then
-			Duel.ChangePosition(g,0,0,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
-		else
-			local op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
-			if op==0 then
-				Duel.ChangePosition(g,0,0,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
-			else
-				Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
-			end
-		end
+		Duel.ChangeToFaceupAttackOrFacedownDefense(g:GetFirst(),tp)
 	end
-	
 end
 --destroy dragon
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -70,7 +58,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.FilterMaximumSideFunctionEx(s.filter),tp,LOCATION_MZONE,0,nil)
 	local g2=Duel.GetMatchingGroup(aux.FilterMaximumSideFunctionEx(s.filter2),tp,0,LOCATION_MZONE,nil)
 	if #g>0 and #g2>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		sg=g2:Select(tp,1,#g,nil)
 		sg=sg:AddMaximumCheck()
 		Duel.Destroy(sg,REASON_EFFECT)

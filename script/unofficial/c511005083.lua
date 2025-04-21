@@ -1,7 +1,6 @@
---Infection Medium
 --インフェクション・ミーディアム
---By Shad3
---fixed by MLD
+--Infection Medium
+--Scripted by Shad3, fixed by MLD
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -29,7 +28,7 @@ function s.initial_effect(c)
 	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
-	e4:SetDescription(aux.Stringid(4001,15))
+	e4:SetDescription(aux.Stringid(id,1))
 	e4:SetCondition(s.descon)
 	e4:SetTarget(s.destg)
 	e4:SetOperation(s.desop)
@@ -60,7 +59,7 @@ function s.initial_effect(c)
 end
 s.listed_names={511005082}
 function s.cfilter(c,tp)
-	return (c:GetPreviousRaceOnField()&RACE_FIEND)==RACE_FIEND and (c:GetPreviousTypeOnField()&TYPE_XYZ)==TYPE_XYZ 
+	return (c:GetPreviousRaceOnField()&RACE_FIEND)==RACE_FIEND and (c:GetPreviousTypeOnField()&TYPE_XYZ)==TYPE_XYZ
 		and c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
@@ -77,7 +76,7 @@ end
 function s.despop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(function(c) return c:GetFlagEffect(id)==0 end,tp,LOCATION_MZONE,0,nil)
 	if #sg>0 and Duel.Destroy(sg,REASON_EFFECT)>0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>4 and not Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) 
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>4 and not Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT)
 			and Duel.IsPlayerCanSpecialSummonMonster(tp,511005082,0,TYPES_TOKEN,300,300,1,RACE_FIEND,ATTRIBUTE_DARK) then
 			for i=1,5 do
 				local token=Duel.CreateToken(tp,511005082)
@@ -86,16 +85,16 @@ function s.despop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 				e1:SetCode(EVENT_PRE_BATTLE_DAMAGE)
 				e1:SetOperation(s.damop)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 				token:RegisterEffect(e1)
-				token:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,0)
+				token:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD,0,0)
 			end
 			Duel.SpecialSummonComplete()
 		end
 	end
 end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectYesNo(tp,aux.Stringid(4001,14)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.ChangeBattleDamage(tp,0)
 		Duel.ChangeBattleDamage(1-tp,0)
 	end

@@ -16,12 +16,12 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(s.handcon)
+	e2:SetDescription(aux.Stringid(id,0))
 	c:RegisterEffect(e2)
 end
 function s.handcon(e)
-	local ph=Duel.GetCurrentPhase()
 	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
-		and ph>=0x08 and ph<=0x20
+		and Duel.IsBattlePhase()
 end
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsC()
@@ -33,12 +33,12 @@ function s.atfilter(c)
 	local class=c:GetMetatable(true)
 	if class==nil then return false end
 	local no=class.xyz_number
-	return no and no>=101 and no<=107 and c:IsFaceup() and c:IsSetCard(0x1048)
+	return no and no>=101 and no<=107 and c:IsFaceup() and c:IsSetCard(SET_NUMBER_C)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and s.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil) 
-		and Duel.IsExistingMatchingCard(s.atfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(s.atfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil)
 end
@@ -46,7 +46,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
-		local g=Duel.GetMatchingGroup(s.atfilter,tp,LOCATION_REMOVED,0,nil)
+		local g=Duel.GetMatchingGroup(s.atfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 		if #g>0 then
 			Duel.Overlay(tc,g)
 			local e1=Effect.CreateEffect(c)

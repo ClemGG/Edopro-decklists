@@ -32,27 +32,24 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 	aux.DoubleSnareValidity(c,LOCATION_MZONE)
 end
-s.listed_series={0x3a}
-function s.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3a)
-end
+s.listed_series={SET_GISHKI}
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,c) then return end
+	if not Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsSetCard,SET_GISHKI),tp,LOCATION_MZONE,0,1,c) then return end
 	--Negate face-up traps
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
 	e1:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)
 	e1:SetTarget(s.distg)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_PHASE|PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	--Negate activated effects
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetOperation(s.disop)
-	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetReset(RESET_PHASE|PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	--Negate Trap monsters
 	local e3=Effect.CreateEffect(c)
@@ -60,7 +57,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e3:SetTarget(s.distg)
-	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetReset(RESET_PHASE|PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 end
 function s.distg(e,c)
@@ -68,7 +65,7 @@ function s.distg(e,c)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tl=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	if tl==LOCATION_SZONE and re:IsActiveType(TYPE_TRAP) then
+	if tl==LOCATION_SZONE and re:IsTrapEffect() then
 		Duel.NegateEffect(ev)
 	end
 end
@@ -78,6 +75,6 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(3682106)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e1)
+	e1:SetReset(RESETS_STANDARD_PHASE_END)
+	e:GetHandler():RegisterEffect(e1)
 end

@@ -1,5 +1,5 @@
 --超魔輝獣マグナム・オーバーロード［Ｒ］
---Supreme Beast Magnum Overlord [R]
+--Supreme Wildgleam Magnum Overlord [R]
 local s,id=GetID()
 function s.initial_effect(c)
 	-- cannot attack
@@ -39,5 +39,5 @@ function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp) and e:GetHandler():IsMaximumModeCenter()
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	e:GetHandler():RegisterFlagEffect(id,RESETS_STANDARD_PHASE_END,0,1)
 end

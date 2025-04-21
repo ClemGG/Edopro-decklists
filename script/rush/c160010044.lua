@@ -5,7 +5,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	--Fusion material
 	c:EnableReviveLimit()
-	Fusion.AddProcMixN(c,false,false,160303019,2)
+	Fusion.AddProcMixN(c,true,true,160303019,2)
 	--Toss a coin a draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COIN+CATEGORY_DRAW)
@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 end
+s.toss_coin=true
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,600) end
 end
@@ -27,8 +28,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	--Requirement
-	 Duel.PayLPCost(tp,600) 
+	 Duel.PayLPCost(tp,600)
 	 --Effect
 	local res=Duel.TossCoin(tp,1)
-	Duel.Draw(tp,res+1,REASON_EFFECT)
+	if res==COIN_HEADS then
+		Duel.Draw(tp,2,REASON_EFFECT)
+	elseif res==COIN_TAILS then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end

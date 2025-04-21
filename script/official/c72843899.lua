@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5034))
+	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,SET_ADVANCED_CRYSTAL_BEAST))
 	e3:SetValue(400)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
@@ -45,7 +45,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 s.listed_names={CARD_ADVANCED_DARK}
-s.listed_series={0x5034}
+s.listed_series={SET_ADVANCED_CRYSTAL_BEAST}
 function s.tgcon(e)
 	return not Duel.IsEnvironment(CARD_ADVANCED_DARK)
 end
@@ -59,8 +59,8 @@ function s.replaceop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
 	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 	c:RegisterEffect(e1)
-	Duel.RaiseEvent(c,EVENT_CUSTOM+47408488,e,0,tp,0,0)
+	Duel.RaiseEvent(c,EVENT_CUSTOM+CARD_CRYSTAL_TREE,e,0,tp,0,0)
 end

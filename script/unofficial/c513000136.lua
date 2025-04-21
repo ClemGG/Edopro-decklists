@@ -1,7 +1,8 @@
---Slifer the Sky Dragon (Manga)
+--ＳＡＩＮＴ ＤＲＡＧＯＮ － ＴＨＥ ＧＯＤ ＯＦ ＯＳＩＲＩＳ
 --マイケル・ローレンス・ディーによってスクリプト
---scripted by MLD, credit to TPD & Cybercatman,updated by Larry126
-Duel.LoadScript("c421.lua")
+--Scripted by MLD, credit to TPD & Cybercatman
+--Updated and currently maintained by Larry126
+Duel.EnableUnofficialProc(PROC_DIVINE_HIERARCHY)
 local s,id=GetID()
 function s.initial_effect(c)
 	--X000
@@ -35,7 +36,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 	--atkdown
 	local e6=Effect.CreateEffect(c)
-	e6:SetDescription(aux.Stringid(4012,0))
+	e6:SetDescription(aux.Stringid(id,0))
 	e6:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DESTROY)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e6:SetRange(LOCATION_MZONE)
@@ -51,7 +52,6 @@ function s.initial_effect(c)
 	e8:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e8)
 end
--------------------------------------------------------------------
 function s.adval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)*1000
 end
@@ -83,7 +83,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(-2000)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 			if tc:GetAttack()==0 then dg:AddCard(tc) end
 		elseif tc:IsPosition(POS_FACEUP_DEFENSE) then
@@ -91,7 +91,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_DEFENSE)
 			e1:SetValue(-2000)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 			if tc:GetDefense()==0 then dg:AddCard(tc) end
 		end

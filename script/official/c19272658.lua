@@ -1,9 +1,9 @@
--- エクシーズ弁当
--- Xyz Bento
--- Scripted by Hatter
+--エクシーズ弁当
+--Xyz Bento
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Attach
+	--Attach 1 monster from your opponent's GY to your Xyz monster 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_LEAVE_GRAVE)
@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_TO_GRAVE)
 	c:RegisterEffect(e2)
-	-- Change battle position
+	--Change battle position of 1 monster Special Summoned from the Extra Deck 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_POSITION)
@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCost(aux.bfgcost)
+	e3:SetCost(Cost.SelfBanish)
 	e3:SetTarget(s.postg)
 	e3:SetOperation(s.posop)
 	c:RegisterEffect(e3)
@@ -37,7 +37,7 @@ function s.attcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.attconfilter,1,nil,tp)
 end
 function s.atttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsType(TYPE_XYZ) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and chkc:IsType(TYPE_XYZ) end
 	if chk==0 then return Duel.IsExistingTarget(aux.FaceupFilter(Card.IsType,TYPE_XYZ),tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(aux.AND(Card.IsMonster,Card.IsAbleToChangeControler),tp,0,LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)

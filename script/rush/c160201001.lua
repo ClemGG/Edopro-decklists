@@ -1,5 +1,5 @@
 --魔将キメルーラ
---Fiendish Commander Kimeruler
+--Kimeruler the Dark Raider
 
 local s,id=GetID()
 function s.initial_effect(c)
@@ -34,7 +34,7 @@ function s.dirop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DIRECT_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
 			c:RegisterEffect(e1)
 			--Prevent non-Warriors from attacking
 			local e2=Effect.CreateEffect(c)
@@ -43,7 +43,7 @@ function s.dirop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetProperty(EFFECT_FLAG_OATH)
 			e2:SetTargetRange(LOCATION_MZONE,0)
 			e2:SetTarget(s.ftarget)
-			e2:SetReset(RESET_PHASE+PHASE_END)
+			e2:SetReset(RESET_PHASE|PHASE_END)
 			Duel.RegisterEffect(e2,tp)
 		end
 	end

@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFieldCard(e:GetHandler():GetControler(),LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(e:GetHandler():GetControler(),LOCATION_FZONE,0)
 	return tc and tc:GetCounter(0x91)>7
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -23,10 +23,10 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	return true
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local dg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)	
+	local dg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local tdg=dg:Select(tp,1,1,nil)
-	local tc=tdg:GetFirst() 
+	local tc=tdg:GetFirst()
 	if tc:IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

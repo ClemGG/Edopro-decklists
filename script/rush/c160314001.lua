@@ -15,6 +15,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 end
+s.toss_coin=true
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPosition(POS_FACEUP_ATTACK)
 end
@@ -27,20 +28,20 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local res=Duel.TossCoin(tp,1)
 	if not (c:IsRelateToEffect(e) and c:IsFaceup()) then return end
-	if res==0 then
+	if res==COIN_TAILS then
 		Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
-	else
+	elseif res==COIN_HEADS then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(1500)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		c:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 		e2:SetOperation(s.atkop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e2:SetReset(RESETS_STANDARD_PHASE_END)
 		c:RegisterEffect(e2)
 	end
 end
@@ -52,7 +53,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(0,1)
 	e1:SetValue(s.aclimit)
 	e1:SetCondition(s.actcon)
-	e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.aclimit(e,re,tp)

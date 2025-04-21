@@ -1,7 +1,8 @@
 --幻煌龍の戦渦
+--Phantasm Spiral Battle
 local s,id=GetID()
 function s.initial_effect(c)
-	--Activate
+	--Destroy 1 card the opponent controls
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -12,13 +13,14 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-	--act in hand
+	--Can be activated from the hand
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(s.handcon)
+	e2:SetCondition(function() return Duel.IsEnvironment(CARD_UMI) end)
 	c:RegisterEffect(e2)
-	--equip
+	--Equip 1 Normal monster with all "Phantasm Spiral" Equip Spells you control
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_EQUIP)
@@ -26,12 +28,12 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCost(aux.bfgcost)
+	e3:SetCost(Cost.SelfBanish)
 	e3:SetTarget(s.eqtg)
 	e3:SetOperation(s.eqop)
 	c:RegisterEffect(e3)
 end
-s.listed_series={0xfa}
+s.listed_series={SET_PHANTASM_SPIRAL}
 s.listed_names={CARD_UMI}
 function s.cfilter(c)
 	return c:IsFacedown() or not c:IsType(TYPE_NORMAL)
@@ -49,19 +51,16 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
-end
-function s.handcon(e)
-	return Duel.IsEnvironment(CARD_UMI)
 end
 function s.efilter(c,tp)
 	return c:IsFaceup() and c:IsType(TYPE_NORMAL)
 		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_SZONE,0,1,nil,c)
 end
 function s.eqfilter(c,tc)
-	return c:IsFaceup() and c:IsType(TYPE_EQUIP) and c:IsSetCard(0xfa) and c:CheckEquipTarget(tc)
+	return c:IsFaceup() and c:IsEquipSpell() and c:IsSetCard(SET_PHANTASM_SPIRAL) and c:CheckEquipTarget(tc)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.efilter(chkc,tp) end
@@ -73,8 +72,8 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(s.eqfilter,tp,LOCATION_SZONE,0,nil,tc)
-	local eq=g:GetFirst()
-	for eq in aux.Next(g) do
+	if #g==0 then return end
+	for eq in g:Iter() do
 		Duel.Equip(tp,eq,tc,true,true)
 	end
 	Duel.EquipComplete()

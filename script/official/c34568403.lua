@@ -26,11 +26,7 @@ end
 function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	local res=0
-	if c:IsHasEffect(73206827) then
-		res=1-Duel.SelectOption(tp,60,61)
-	else res=Duel.TossCoin(tp,1) end
-	s.arcanareg(c,res)
+	s.arcanareg(c,Arcana.TossCoin(c,tp))
 end
 function s.arcanareg(c,coin)
 	--Coin effects
@@ -42,26 +38,26 @@ function s.arcanareg(c,coin)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_ADJUST)
-	e2:SetRange(LOCATION_MZONE) 
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetOperation(s.ctop)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e2:SetReset(RESET_EVENT|RESETS_STANDARD)
 	c:RegisterEffect(e2)
-	c:RegisterFlagEffect(36690018,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,coin,63-coin)
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,coin)
+	Arcana.RegisterCoinResult(c,coin)
+	c:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD,0,1,coin)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetFlagEffectLabel(36690018)==1 and c:IsRelateToBattle() and c:IsStatus(STATUS_OPPO_BATTLE)
+	return Arcana.GetCoinResult(c)==COIN_HEADS and c:IsRelateToBattle() and c:IsStatus(STATUS_OPPO_BATTLE)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=e:GetHandler():GetBattleTarget()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+		and tc:IsLocation(LOCATION_GRAVE|LOCATION_REMOVED) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetTargetCard(tc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tc,1,0,0)
 end
@@ -74,12 +70,12 @@ end
 function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--Heads
-	if c:GetFlagEffectLabel(36690018)==1 and c:GetFlagEffectLabel(id)==1 then
-		c:SetFlagEffectLabel(id,0)
+	if Arcana.GetCoinResult(c)==COIN_HEADS and c:GetFlagEffectLabel(id)==COIN_HEADS then
+		c:SetFlagEffectLabel(id,COIN_TAILS)
 	end
 	--Tails
-	if c:GetFlagEffectLabel(36690018)==0 and c:GetFlagEffectLabel(id)==0 then
-		c:SetFlagEffectLabel(id,1)
+	if Arcana.GetCoinResult(c)==COIN_TAILS and c:GetFlagEffectLabel(id)==COIN_TAILS then
+		c:SetFlagEffectLabel(id,COIN_HEADS)
 		Duel.GetControl(c,1-tp,0,0)
 	end
 end

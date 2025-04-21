@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	return tc and tc:GetCounter(0x91)>1
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -23,7 +23,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.cfilter(c,e,tp,ft)
 	local lv=c:GetLevel()
-	return lv>0 and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup()) 
+	return lv>0 and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,lv+1,e,tp)
 end
 function s.spfilter(c,lv,e,tp)

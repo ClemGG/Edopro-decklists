@@ -1,4 +1,4 @@
---ドドドセカンド 
+--ドドドセカンド
 --Dododo Second
 local s,id=GetID()
 function s.initial_effect(c)
@@ -18,7 +18,7 @@ function s.fupfilter(c)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.fupfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		and (not Duel.IsPlayerAffectedByEffect(tp,FLAG_NO_TRIBUTE)) 
+		and (not Duel.IsPlayerAffectedByEffect(tp,FLAG_NO_TRIBUTE))
 		and e:GetHandler():CanBeDoubleTribute(FLAG_DOUBLE_TRIB_FIRE)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -29,7 +29,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.PayLPCost(tp,500)
 	--effect
 	local c=e:GetHandler()
-	c:AddDoubleTribute(id,s.otfilter,s.eftg,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,FLAG_DOUBLE_TRIB_FIRE)
+	c:AddDoubleTribute(id,s.otfilter,s.eftg,RESETS_STANDARD_PHASE_END,FLAG_DOUBLE_TRIB_FIRE)
 end
 function s.otfilter(c,tp)
 	return c:IsDoubleTribute(FLAG_DOUBLE_TRIB_FIRE) and (c:IsControler(tp) or c:IsFaceup())

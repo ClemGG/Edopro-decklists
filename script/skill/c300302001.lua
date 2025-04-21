@@ -1,38 +1,38 @@
 --Fusion Party!
 local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddSkillProcedure(c,1,false,s.flipcon(Fusion.SummonEffTG()),s.flipop(Fusion.SummonEffOP{extraop=s.extraop}),1)
+	aux.AddSkillProcedure(c,1,false,s.flipcon,s.flipop)
 end
-function s.flipcon(fustg)
-	return function(e,tp,eg,ep,ev,re,r,rp)
-		--opd check
-		if Duel.GetFlagEffect(ep,id)>0 then return end
-		--condition
-		return aux.CanActivateSkill(tp) and fustg(e,tp,eg,ep,ev,re,r,rp,0)
+function s.flipcon(e,tp,eg,ep,ev,re,r,rp)
+	return aux.CanActivateSkill(tp) and s.cost(e,tp,eg,ep,ev,re,r,rp,0) and not Duel.HasFlagEffect(tp,id)
+end
+function s.flipop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SKILL_FLIP,tp,id|(1<<32))
+	Duel.Hint(HINT_CARD,tp,id)
+	--You can only apply this effect once per Duel
+	Duel.RegisterFlagEffect(tp,id,0,0,0)
+	--Discard 1 card
+	s.cost(e,tp,eg,ep,ev,re,r,rp,1)
+	--Fusion Summon 1 Fusion Monster using monsters from your hand or field as material
+	Fusion.SummonEffTG()(e,tp,eg,ep,ev,re,r,rp,1)
+	Fusion.SummonEffOP()(e,tp,eg,ep,ev,re,r,rp)
+end
+function s.costfilter(c,e,tp,eg,ep,ev,re,r,rp)
+	if not c:IsDiscardable() then return false end
+	local params={extrafil=s.fextra(c)}
+	return Fusion.SummonEffTG(params)(e,tp,eg,ep,ev,re,r,rp,0)
+end
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	Duel.DiscardHand(tp,s.costfilter,1,1,REASON_COST|REASON_DISCARD,nil,e,tp,eg,ep,ev,re,r,rp)
+end
+function s.fextra(exc)
+	return function(e,tp,mg)
+		return nil,s.fcheck(exc)
 	end
 end
-function s.extraop(e,tc,tp,mat)
-	return tc:RegisterEffect(e:GetLabelObject())
-end
-function s.flipop(fusop)
-	return function(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Hint(HINT_SKILL_FLIP,tp,id|(1<<32))
-		Duel.Hint(HINT_CARD,tp,id)
-		Duel.RegisterFlagEffect(ep,id,0,0,0)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		e1:SetOperation(function() Duel.SetChainLimitTillChainEnd(aux.FALSE) end)
-		e:SetLabelObject(e1)
-		fusop(e,tp,eg,ep,ev,re,r,rp)
-		e1:Reset()
-		e:SetLabelObject(nil)
+function s.fcheck(exc)
+	return function(tp,sg,fc)
+		return not (exc and sg:IsContains(exc))
 	end
-end
-function s.filter1(c,e)
-	return not c:IsImmuneToEffect(e)
-end
-function s.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end

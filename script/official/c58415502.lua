@@ -1,15 +1,15 @@
--- ロイヤル・ストレート
--- Royal Straight
--- Scripted by Hatter
+--ロイヤル・ストレート
+--Royal Straight
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Send "Jack's Knight", "Queen's Knight", and "King's Knight" to the GY
+	--Send "Jack's Knight", "Queen's Knight", and "King's Knight" to the GY
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E+TIMING_MAIN_END)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E|TIMING_MAIN_END)
 	e1:SetTarget(s.tgtg)
 	e1:SetOperation(s.tgop)
 	c:RegisterEffect(e1)
@@ -26,7 +26,11 @@ function s.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,code_chk,code_chk)
 end
 function s.spchkfilter(c,sg,tp)
-	return (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,sg,c) or Duel.GetMZoneCount(tp,sg))>0
+	if c:IsLocation(LOCATION_EXTRA) then
+		return Duel.GetLocationCountFromEx(tp,tp,sg,c)>0
+	else
+		return Duel.GetMZoneCount(tp,sg)>0
+	end
 end
 function s.tgrescon(summg)
 	return function(sg,e,tp)
@@ -36,18 +40,18 @@ function s.tgrescon(summg)
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local summg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
+		local summg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND|LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE,0,nil,e,tp)
 		if #summg<1 then return false end
-		local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
+		local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_MZONE|LOCATION_HAND,0,nil)
 		return #g>2 and aux.SelectUnselectGroup(g,e,tp,3,3,s.tgrescon(summg),0)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,3,tp,LOCATION_MZONE+LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,3,tp,LOCATION_MZONE|LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND|LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local summg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
+	local summg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HAND|LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE,0,nil,e,tp)
 	if #summg<1 then return end
-	local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
+	local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_MZONE|LOCATION_HAND,0,nil)
 	if #g<3 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	g=aux.SelectUnselectGroup(g,e,tp,3,3,s.tgrescon(summg),1,tp,HINTMSG_TOGRAVE)

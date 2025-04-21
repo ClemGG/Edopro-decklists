@@ -1,6 +1,5 @@
 --激鱗解放
---Enraged Scale Liberation
-
+--Release Wrath
 local s,id=GetID()
 function s.initial_effect(c)
 	--Send the top 2 cards of your Deck to the GY
@@ -28,7 +27,7 @@ function s.cfilter(c)
 	return c:IsLocation(LOCATION_GRAVE) and c:IsRace(RACE_REPTILE) and c:IsMonster()
 end
 function s.filter(c)
-	return c:IsRace(RACE_REPTILE) and c:IsFaceup() 
+	return c:IsRace(RACE_REPTILE) and c:IsFaceup()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	--Requirement
@@ -37,7 +36,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,5,REASON_EFFECT)
 	local g=Duel.GetOperatedGroup()
 	local ct=g:FilterCount(s.cfilter,nil)
-	if ct>0 and Duel.IsExistingMatchingCard(aux.FilterMaximumSideFunctionEx(s.filter),tp,LOCATION_MZONE,0,1,nil) 
+	if ct>0 and Duel.IsExistingMatchingCard(aux.FilterMaximumSideFunctionEx(s.filter),tp,LOCATION_MZONE,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tc=Duel.SelectMatchingCard(tp,aux.FilterMaximumSideFunctionEx(s.filter),tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
@@ -49,8 +48,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(ct*200)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffectRush(e1)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

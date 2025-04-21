@@ -1,5 +1,5 @@
 --獣機界奥義 獣之拳
---Beast Gear World Secret Technique – Fist of the Beast
+--Beast Gear Secret Art - Primal Fist
 --Scripted by The Razgriz
 local s,id=GetID()
 function s.initial_effect(c)
@@ -13,10 +13,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.atkfilter(c)
-	return (c:IsLevel(7) or c:IsLevel(8) or c:IsLevel(9)) and (c:IsRace(RACE_FIEND) or c:IsRace(RACE_BEASTWARRIOR) or c:IsRace(RACE_MACHINE)) and c:IsFaceup()
+	return c:IsLevelBetween(7,9) and c:IsRace(RACE_FIEND|RACE_BEASTWARRIOR|RACE_MACHINE) and c:IsFaceup()
 end
 function s.atkfilter2(c)
-	return (c:IsRace(RACE_FAIRY) or c:IsRace(RACE_DRAGON) or c:IsRace(RACE_SPELLCASTER)) and c:IsFaceup()
+	return c:IsRace(RACE_FAIRY|RACE_DRAGON|RACE_SPELLCASTER) and c:IsFaceup()
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttackTarget()

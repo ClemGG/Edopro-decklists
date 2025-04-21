@@ -16,7 +16,7 @@ function s.initial_effect(c)
 end
 s.listed_names={id,67169062} --to be changed by Avarice's ID (Rush)
 function s.tdfilter(c)
-	return c:IsMonster() and c:IsAbleToDeckAsCost()
+	return c:IsMonster() and c:IsAbleToDeckOrExtraAsCost()
 end
 function s.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE,0,5,nil) end
@@ -31,17 +31,19 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	--Requirement
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g1=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE,0,5,5,nil)
+	Duel.HintSelection(g1,true)
 	if #g1==0 then return end
 	Duel.SendtoDeck(g1,nil,SEQ_DECKTOP,REASON_EFFECT)
 	local g2=Duel.GetOperatedGroup()
 	if g2:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
 		Duel.ShuffleDeck(tp)
 	end
-	local ct=g2:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	local ct=g2:FilterCount(Card.IsLocation,nil,LOCATION_DECK|LOCATION_EXTRA)
 	if ct>0 then
 		--Effect
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local g3=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,2,nil)
+		local g3=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,0,LOCATION_GRAVE,1,2,nil)
+		Duel.HintSelection(g3,true)
 		if #g3==0 then return end
 		if Duel.SendtoDeck(g3,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 			local g4=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_GRAVE,0,nil,67169062,id)

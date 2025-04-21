@@ -1,7 +1,6 @@
 --鋼鉄の魔導騎士-ギルティギア・フリード
 --Gilti-Gearfried the Magical Steel Knight
 --Scripted by Naim
-
 local s,id=GetID()
 function s.initial_effect(c)
 	--Must be properly summoned before reviving
@@ -53,26 +52,26 @@ function s.fusfilter(c,attr,fc,sumtype,tp)
 	return c:IsAttribute(attr,fc,sumtype,tp) and not c:IsHasEffect(511002961)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+	return e:GetHandler():IsFusionSummoned()
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetLabel()~=0 then
 		--Can make a second attack
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(3201)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetDescription(3201)
 		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	end
 end
 function s.valcheck(e,c)
 	local c=e:GetHandler()
 	local g=c:GetMaterial()
-	local lg=g:Filter(Card.IsLocation,nil,LOCATION_MZONE,c,SUMMON_TYPE_FUSION)
+	local lg=g:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 	if #g==#lg then
 		e:GetLabelObject():SetLabel(id)
 	end
@@ -91,9 +90,6 @@ function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local bc=c:GetBattleTarget()
 	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle()
 end
-function s.filter(c)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
-end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local value=c:GetDefense()
@@ -102,7 +98,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		e1:SetValue(value/2)
 		c:RegisterEffect(e1)
 	end
@@ -118,15 +114,15 @@ end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.NegateEffect(ev) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if #g>0 then
-		Duel.HintSelection(g)
+		Duel.HintSelection(g,true)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

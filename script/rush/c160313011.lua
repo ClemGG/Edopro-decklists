@@ -1,5 +1,5 @@
 --トランザム・ジェライ
---Transamu Jerai
+--Transam Jelai
 --scripted by YoshiDuels
 local s,id=GetID()
 function s.initial_effect(c)
@@ -44,7 +44,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 		e2:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
 		e2:SetValue(1)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e2:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e2)
 	end
 end

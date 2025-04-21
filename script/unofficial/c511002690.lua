@@ -1,4 +1,5 @@
---Combat Wheel
+--コンバット・ホイール (Anime)
+--Combat Wheel (Anime)
 local s,id=GetID()
 function s.initial_effect(c)
 	--synchro summon
@@ -6,7 +7,7 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	--adup
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(38180759,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_MZONE)
@@ -39,7 +40,7 @@ function s.initial_effect(c)
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()~=tp and ph>=0x08 and ph<=0x20 
+	return Duel.GetTurnPlayer()~=tp and ph>=0x08 and ph<=0x20
 		and (Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated())
 end
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -62,7 +63,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e1)
 		end
-		e:GetHandler():RegisterFlagEffect(id,RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(id,RESET_PHASE|PHASE_END,0,1)
 	end
 end
 function s.tglimit(e,c)

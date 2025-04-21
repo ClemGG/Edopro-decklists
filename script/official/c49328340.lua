@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	--shuffle
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
-	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e3:SetCode(EVENT_BATTLE_DAMAGE)
 	e3:SetRange(LOCATION_SZONE)
@@ -45,6 +45,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,2,REASON_EFFECT)==2 then
 		Duel.ShuffleHand(tp)
 		Duel.BreakEffect()
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT|REASON_DISCARD)
 	end
 end

@@ -1,5 +1,5 @@
 --呪いの着信番号
---Terror Phone Number
+--Terrorphone Number
 --scripted by Naim
 local s,id=GetID()
 function s.initial_effect(c)
@@ -34,12 +34,12 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetValue(s.atklimit)
 	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_PHASE|PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.atklimit(e,c)
 	local g=Duel.GetMatchingGroup(aux.FaceupFilter(Card.HasLevel),e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	if #g==0 then return end
-	local maxg,lv=g:GetMaxGroup(Card.GetLevel)
-	return c:IsFaceup() and (not c:HasLevel() or (#g~=#maxg and c:IsLevelAbove(lv)))
+	local maxg,lv=g:GetMinGroup(Card.GetLevel)
+	return c:IsFaceup() and (not c:HasLevel() or c:GetLevel()~=lv)
 end

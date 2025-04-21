@@ -5,7 +5,7 @@ local s,id,alias=GetID()
 function s.initial_effect(c)
 	alias=c:GetOriginalCodeRule()
 	--synchro summon
-	Synchro.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsType,TYPE_SYNCHRO),1,1,Synchro.NonTuner(Card.IsSetCard,0x12f),1,99)
+	Synchro.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsType,TYPE_SYNCHRO),1,1,Synchro.NonTuner(Card.IsSetCard,SET_BATTLEWASP),1,99)
 	c:EnableReviveLimit()
 	--atk
 	local e1=Effect.CreateEffect(c)
@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_BATTLE_DAMAGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
-	e1:SetCondition(s.atcon)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ep~=tp end)
 	e1:SetTarget(s.attg)
 	e1:SetOperation(s.atop)
 	c:RegisterEffect(e1)
@@ -55,9 +55,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end)
 end
-function s.atcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp
-end
+s.synchro_tuner_required=1
 function s.attg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
@@ -65,21 +63,22 @@ function s.attg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 end
 function s.atop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(-ev)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_BATTLE)
 		tc:RegisterEffect(e1)
 	end
 end
 function s.damcon(e,tp,eg,ep,ev,re,r,rp,chk)
-	return Duel.GetTurnPlayer()==tp and s[0]
+	return Duel.IsTurnPlayer(tp) and s[0]
 end
 function s.filter(c)
-	return c:IsSetCard(0x12f) and c:IsMonster()
+	return c:IsSetCard(SET_BATTLEWASP) and c:IsMonster()
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,0,1,nil) end

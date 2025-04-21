@@ -3,7 +3,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	Gemini.AddProcedure(c)
-	--Special Summon 1 Gemini monster
+	--Special Summon 1 Gemini monster and change levels to that monster's level
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -30,7 +30,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if #g==0 or Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local tg=Duel.GetMatchingGroup(s.gmfilter,tp,LOCATION_MZONE,0,nil,g:GetFirst():GetOriginalLevel())
+	local lv=g:GetFirst():GetOriginalLevel()
+	local tg=Duel.GetMatchingGroup(s.gmfilter,tp,LOCATION_MZONE,0,nil,lv)
 	for tc in tg:Iter() do
 		--Change level
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -38,7 +39,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCode(EFFECT_CHANGE_LEVEL_FINAL)
 		e1:SetValue(lv)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 	end
 end

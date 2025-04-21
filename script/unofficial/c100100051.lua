@@ -12,14 +12,14 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	if chk==0 then return tc and tc:IsCanRemoveCounter(tp,0x91,3,REASON_COST) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	tc:RemoveCounter(tp,0x91,3,REASON_COST)
 end
 function s.filter(c)
 	local lv=c:GetLevel()
-	return c:IsSetCard(0x19) and lv>0 and lv<5 and c:IsAbleToHand()
+	return c:IsSetCard(SET_GLADIATOR) and lv>0 and lv<5 and c:IsAbleToHand()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end

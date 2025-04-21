@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_WARRIOR))
 	e1:SetValue(s.indval)
 	c:RegisterEffect(e1)
-	--Special Summon
+	--Special Summon 1 Level/Rank 4 Warrior monster
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -23,11 +23,11 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,{id,0})
-	e2:SetCost(aux.dxmcostgen(2,2,nil))
+	e2:SetCost(Cost.Detach(2,2,nil))
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2,false,REGISTER_FLAG_DETACH_XMAT)
-	--Gain LP
+	--Gain LP equal to the ATK of a battling monster
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_RECOVER)
@@ -60,20 +60,20 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
 		and c:IsFaceup() and c:IsRelateToEffect(e) then
 		--Increase ATK
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD_DISABLE)
 		e1:SetValue(tc:GetBaseAttack())
 		c:RegisterEffect(e1)
 	end
 end
 function s.rccon(e,tp,eg,ep,ev,re,r,rp)
 	local _,at=Duel.GetBattleMonster(tp)
-	if not (at and at:GetAttack()>0) then return false end
+	if not (at and at:GetAttack()>0 and at:IsFaceup()) then return false end
 	e:SetLabelObject(at)
 	return true
 end

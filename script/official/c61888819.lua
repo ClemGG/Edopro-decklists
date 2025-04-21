@@ -1,18 +1,18 @@
 --インヴェルズ・オリジン
 --Steelswarm Origin
 --force effect scripted by edo9300
+local ALL_EMZ=0x600060 --0x60 for your EMZs, 0x60<<16 for your opponent's EMZs
 local s,id=GetID()
 function s.initial_effect(c)
 	--link summon
-	Link.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsSetCard,0xa),2,2)
+	Link.AddProcedure(c,aux.FilterBoolFunctionEx(Card.IsSetCard,SET_LSWARM),2,2)
 	c:EnableReviveLimit()
 	--force mzone
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_FORCE_MZONE)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_EMZONE)
 	e1:SetTargetRange(LOCATION_EXTRA,LOCATION_EXTRA)
-	e1:SetCondition(s.fmcon)
 	e1:SetValue(s.fmval)
 	c:RegisterEffect(e1)
 	--cannot be target/indestructable
@@ -44,24 +44,21 @@ function s.initial_effect(c)
 	e6:SetOperation(s.spop)
 	c:RegisterEffect(e6)
 end
-s.listed_series={0xa}
-function s.fmcon(e)
-	return e:GetHandler():IsInExtraMZone()
-end
+s.listed_series={SET_LSWARM}
 function s.fmval(e,c,fp,rp,r)
-	return e:GetHandler():GetLinkedZone(rp)|0x600060
+	return e:GetHandler():GetLinkedZone(rp)|ALL_EMZ
 end
 function s.indcon(e)
 	return #(e:GetHandler():GetLinkedGroup():Filter(Card.IsMonster,nil))>0
 end
 function s.cfilter(c)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
+	return c:IsReason(REASON_BATTLE|REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil)
 end
 function s.spfilter(c,e,tp)
-	return c:IsLevelBelow(4) and c:IsSetCard(0xa) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsLevelBelow(4) and c:IsSetCard(SET_LSWARM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -15,13 +15,14 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetCondition(s.cond)
+	e2:SetDescription(aux.Stringid(id,0))
 	c:RegisterEffect(e2)
 end
 function s.cond(e)
 	return not Duel.IsExistingMatchingCard(Card.IsTrap,e:GetHandlerPlayer(),LOCATION_GRAVE,0,1,nil)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:IsHasType(EFFECT_TYPE_ACTIVATE) 
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:IsHasType(EFFECT_TYPE_ACTIVATE)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,98827725,0x10db,0x11,0,800,4,RACE_WARRIOR,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end

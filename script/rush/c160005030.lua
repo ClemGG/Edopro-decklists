@@ -1,5 +1,5 @@
--- 花牙蘭獅子ガジュウ丸 
--- Flower Fang Orchid Lion Gajuumaru
+--花牙蘭獅子ガジュウ丸
+--Gajumaru the Shadow Flower Lion
 local s,id=GetID()
 function s.initial_effect(c)
 	--Targeted monster loses ATK
@@ -17,10 +17,10 @@ function s.costfilter(c)
 	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_PLANT) and c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
 function s.filter(c)
-	return c:IsFaceup() and c:GetBaseAttack()>0 and c:IsLevelBelow(8) and c:IsAttribute(ATTRIBUTE_EARTH)
+	return c:IsFaceup() and c:GetBaseAttack()>0 and c:IsLevelBelow(8) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsNotMaximumModeSide()
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE,0,1,e:GetHandler()) 
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
 		and Duel.IsExistingMatchingCard(s.filter,tp,0,LOCATION_MZONE,1,nil) end
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
@@ -38,8 +38,8 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_BASE_ATTACK)
 			e1:SetValue(0)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			dg:GetFirst():RegisterEffectRush(e1)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
+			dg:GetFirst():RegisterEffect(e1)
 		end
 	end
 end

@@ -1,4 +1,5 @@
 --端末世界NEXT
+--Terminal World NEXT
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -7,7 +8,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(s.condition)
 	c:RegisterEffect(e1)
-	--
+	--Cards cannot be placed on the field
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -44,7 +45,7 @@ end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)<=3
-		and Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)<=3
+		and Duel.GetMatchingGroupCount(Card.IsSpellTrap,tp,0,LOCATION_ONFIELD,nil)<=3
 end
 function s.mvalue(e,fp,rp,r)
 	if r~=LOCATION_REASON_TOFIELD then return 99 end
@@ -57,12 +58,12 @@ end
 function s.aclimit(e,re,tp)
 	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
 	if re:IsActiveType(TYPE_FIELD) then
-		return not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)>2
+		return not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)>2
 	elseif re:IsActiveType(TYPE_PENDULUM) then
 		return Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)>2
 	end
 	return false
 end
 function s.setlimit(e,c,tp)
-	return c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)>2
+	return c:IsFieldSpell() and not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)>2
 end

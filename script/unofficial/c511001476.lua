@@ -18,7 +18,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x5) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(SET_ARCANA_FORCE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.spfilter(chkc,e,tp) end
@@ -68,8 +68,7 @@ function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetFirstCardTarget()
 	if not tc then return end
-	local val=tc:GetFlagEffectLabel(36690018)
-	if val==1 then
-		tc:SetFlagEffectLabel(36690018,1-val)
+	if Arcana.GetCoinResult(tc)==COIN_HEADS then
+		Arcana.SetCoinResult(tc,COIN_TAILS)
 	end
 end

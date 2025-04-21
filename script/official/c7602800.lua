@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.listed_names={CARD_BLACK_WINGED_DRAGON}
-s.listed_series={0x33}
+s.listed_series={SET_BLACKWING}
 s.counter_list={COUNTER_FEATHER}
 function s.spcfilter(c,tp)
 	return c:IsFaceup() and c:IsSummonPlayer(tp) and c:IsAttribute(ATTRIBUTE_DARK)
@@ -43,16 +43,17 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.spcfilter,1,nil,tp)
 end
 function s.spfilter(c,e,tp,atk)
-	return (c:IsSetCard(0x33) or c:IsCode(CARD_BLACK_WINGED_DRAGON)) and c:GetAttack()<atk and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsFaceup()
+	return (c:IsSetCard(SET_BLACKWING) or c:IsCode(CARD_BLACK_WINGED_DRAGON)) and c:IsFaceup() and c:GetAttack()<atk
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local ag,atk=eg:Filter(s.spcfilter,nil,tp):GetMaxGroup(Card.GetAttack)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and s.spfilter(chkc,e,tp,atk) end
+	local _,atk=eg:Filter(s.spcfilter,nil,tp):GetMaxGroup(Card.GetAttack)
+	if not atk then atk=0 end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE|LOCATION_REMOVED) and chkc:IsControler(tp) and s.spfilter(chkc,e,tp,atk) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,atk) end
+		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE|LOCATION_REMOVED,0,1,nil,e,tp,atk) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,atk)
+	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE|LOCATION_REMOVED,0,1,1,nil,e,tp,atk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -63,7 +64,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.repfilter(c,tp)
 	return c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
-		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+		and c:IsReason(REASON_BATTLE|REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function s.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -75,5 +76,5 @@ function s.desrepval(e,c)
 	return s.repfilter(c,e:GetHandlerPlayer())
 end
 function s.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RemoveCounter(tp,1,0,COUNTER_FEATHER,1,REASON_EFFECT+REASON_REPLACE)
+	Duel.RemoveCounter(tp,1,0,COUNTER_FEATHER,1,REASON_EFFECT|REASON_REPLACE)
 end

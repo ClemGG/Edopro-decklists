@@ -27,7 +27,7 @@ end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
 	local flag=0
-	if g:IsExists(s.filter,2,nil) then flag=1 end
+	if g:FilterCount(s.filter,nil)==#g then flag=1 end
 	e:SetLabel(flag)
 end
 function s.damcond(e,tp,eg,ep,ev,re,r,rp)
@@ -59,7 +59,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(atk)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		c:RegisterEffect(e1)
 	end
 end

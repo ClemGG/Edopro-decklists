@@ -1,12 +1,11 @@
 --海晶乙女瀑布 (Anime)
 --Marincess Cascade (Anime)
 --scripted by Larry126
-local s,id,alias=GetID()
+local s,id=GetID()
 function s.initial_effect(c)
-	alias=c:GetOriginalCodeRule()
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(alias,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -21,11 +20,12 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(s.handcon)
+	e2:SetDescription(aux.Stringid(id,1))
 	c:RegisterEffect(e2)
 end
 s.listed_series={0x12b}
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsLinkMonster() and c:IsSetCard(0x12b)
+	return c:IsFaceup() and c:IsLinkMonster() and c:IsSetCard(SET_MARINCESS)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_MZONE,0,nil)
@@ -41,13 +41,13 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetCountLimit(1)
 		e1:SetCondition(s.retcon)
 		e1:SetOperation(s.retop)
-		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
+		if Duel.IsTurnPlayer(tp) and Duel.GetCurrentPhase()==PHASE_STANDBY then e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
 		else e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN) end
 		Duel.RegisterEffect(e1,tp)
 	end
 end
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and Duel.GetTurnCount()~=e:GetLabel()
+	return Duel.IsTurnPlayer(tp) and Duel.GetTurnCount()~=e:GetLabel()
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	for c in aux.Next(e:GetLabelObject()) do

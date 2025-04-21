@@ -1,4 +1,5 @@
 --宇宙の収縮
+--Spatial Collapse
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -78,17 +79,17 @@ function s.mvalue(e,fp,rp,r)
 	return 5-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
 function s.svalue(e,fp,rp,r)
-	return 5-Duel.GetFieldGroupCount(fp,LOCATION_MZONE+LOCATION_FZONE,0)
+	return 5-Duel.GetFieldGroupCount(fp,LOCATION_MZONE|LOCATION_FZONE,0)
 end
 function s.aclimit(e,re,tp)
 	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
 	if re:IsActiveType(TYPE_FIELD) then
-		return not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
+		return not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
 	elseif re:IsActiveType(TYPE_PENDULUM) then
 		return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
 	end
 	return false
 end
 function s.setlimit(e,c,tp)
-	return c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
+	return c:IsFieldSpell() and not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
 end

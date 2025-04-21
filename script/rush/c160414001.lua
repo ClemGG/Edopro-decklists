@@ -1,5 +1,5 @@
--- 最強旗獣サージバイコーン 
--- Saikyo Flag Beast Surge Bicorn
+-- 最強旗獣サージバイコーン
+--Ultimate Flag Beast Surge Bicorn
 local s,id=GetID()
 function s.initial_effect(c)
 	--double tribute
@@ -30,7 +30,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	--double tribute
 	local c=e:GetHandler()
-	c:AddDoubleTribute(id,s.otfilter,s.eftg,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,FLAG_DOUBLE_TRIB_LIGHT+FLAG_DOUBLE_TRIB_MACHINE)
+	c:AddDoubleTribute(id,s.otfilter,s.eftg,RESETS_STANDARD_PHASE_END,FLAG_DOUBLE_TRIB_LIGHT+FLAG_DOUBLE_TRIB_MACHINE)
 end
 function s.otfilter(c,tp)
 	return c:IsDoubleTribute(FLAG_DOUBLE_TRIB_LIGHT+FLAG_DOUBLE_TRIB_MACHINE) and (c:IsControler(tp) or c:IsFaceup())

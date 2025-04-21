@@ -32,14 +32,14 @@ function s.initial_effect(c)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetHintTiming(TIMING_END_PHASE)
 	e3:SetCountLimit(1,id)
-	e3:SetCondition(function() return Duel.GetCurrentPhase()==PHASE_END end)
+	e3:SetCondition(function() return Duel.IsPhase(PHASE_END) end)
 	e3:SetTarget(s.tftg)
 	e3:SetOperation(s.tfop)
 	c:RegisterEffect(e3)
 end
-s.listed_series={0x160,0x189}
+s.listed_series={SET_BRANDED,SET_BYSTIAL}
 function s.condition(e,tp)
-	return Duel.IsMainPhase() and Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsSetCard,0x189),tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsMainPhase() and Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsSetCard,SET_BYSTIAL),tp,LOCATION_MZONE,0,1,nil)
 end
 function s.tribfilter(c)
 	return c:IsRace(RACE_DRAGON)
@@ -64,7 +64,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.tffilter(c,tp)
-	return c:IsSpellTrap() and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x160) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+	return c:IsSpellTrap() and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(SET_BRANDED) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.tffilter(chkc,tp) end

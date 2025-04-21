@@ -1,5 +1,5 @@
--- 陰陽封陣 
--- Onmyou Seal Array
+--陰陽封陣
+--Talismanic Seal Array
 local s,id=GetID()
 function s.initial_effect(c)
 	--Increase ATK
@@ -22,6 +22,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	--Requirement
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,aux.AND(Card.IsMonster,Card.IsAbleToDeckOrExtraAsCost),tp,LOCATION_GRAVE,0,4,4,nil)
+	Duel.HintSelection(g,true)
 	if #g>0 and Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)>0 then
 		--Effect
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATKDEF)
@@ -33,8 +34,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(tc:GetLevel()*-200)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffectRush(e1)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

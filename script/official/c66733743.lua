@@ -2,8 +2,9 @@
 --T.G. Metal Skeleton
 local s,id=GetID()
 function s.initial_effect(c)
-	--spsummon
+	--Special Summon itself from the hand
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -14,18 +15,18 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	--destroy replace
+	--Destruction replacement for a "T.G." monster
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetRange(LOCATION_GRAVE+LOCATION_MZONE)
+	e2:SetRange(LOCATION_GRAVE|LOCATION_MZONE)
 	e2:SetCountLimit(1,{id,1})
 	e2:SetTarget(s.reptg)
 	e2:SetValue(s.repval)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0x27}
+s.listed_series={SET_TG}
 function s.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and (c:IsReason(REASON_BATTLE)
 		or (c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp))
@@ -45,21 +46,18 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x27) and c:IsLocation(LOCATION_MZONE)
-		and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+	return c:IsFaceup() and c:IsSetCard(SET_TG) and c:IsLocation(LOCATION_MZONE)
+		and c:IsControler(tp) and c:IsReason(REASON_EFFECT|REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and e:GetHandler():IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-		return true
-	else
-		return false
-	end
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsStatus(STATUS_DESTROY_CONFIRMED)
+		and c:IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
+	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function s.repval(e,c)
 	return s.repfilter(c,e:GetHandlerPlayer())
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT|REASON_REPLACE)
 end

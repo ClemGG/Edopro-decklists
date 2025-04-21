@@ -1,9 +1,9 @@
--- スモール・ワールド
--- Small World
--- Scripted by Hatter
+--スモール・ワールド
+--Small World
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Banish and search
+	--Banish and search
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -18,8 +18,8 @@ function s.singleprop(c,d)
 	if c:IsRace(d:GetRace()) then ct=ct+1 end
 	if c:IsAttribute(d:GetAttribute()) then ct=ct+1 end
 	if c:IsLevel(d:GetLevel()) then ct=ct+1 end
-	if c:IsAttack(d:GetAttack()) and d:IsAttack(c:GetAttack()) then ct=ct+1 end
-	if c:IsDefense(d:GetDefense()) and d:IsDefense(c:GetDefense()) then ct=ct+1 end
+	if c:IsAttack(d:GetTextAttack()) and d:IsAttack(c:GetTextAttack()) then ct=ct+1 end
+	if c:IsDefense(d:GetTextDefense()) and d:IsDefense(c:GetTextDefense()) then ct=ct+1 end
 	return ct==1
 end
 function s.thfilter(c,mc)

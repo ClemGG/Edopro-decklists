@@ -14,11 +14,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	return tc and tc:GetCounter(0x91)>1
 end
 function s.filter(c,ft,tp)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and (ft>0 or (c:GetSequence()<5 and c:IsControler(tp)))
+	return c:IsSpecialSummoned() and (ft>0 or (c:GetSequence()<5 and c:IsControler(tp)))
 end
 function s.spfilter(c,e,tp)
 	return c:IsLevelBelow(4) and c:IsType(TYPE_NORMAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -35,7 +35,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) and Duel.SendtoGrave(tc,REASON_EFFECT)>0 
+	if tc and tc:IsRelateToEffect(e) and Duel.SendtoGrave(tc,REASON_EFFECT)>0
 		and tc:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)

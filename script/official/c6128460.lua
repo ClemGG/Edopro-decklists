@@ -1,7 +1,6 @@
 --ワイトベイキング
---Wight Baking
+--Wightbaking
 --Logical Nonsense
-
 local s,id=GetID()
 function s.initial_effect(c)
 	--Name becomes "Skull Servant" while in GY
@@ -21,10 +20,10 @@ function s.initial_effect(c)
 	e2:SetValue(s.repval)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
-	--Add up to 2 "Skull Servant"/monsters that lists "Skull Servant" from deck, then discard 1
+	--Add 2 "Skull Servant"/monsters that lists "Skull Servant" with different names from the Deck, then discard 1
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_HANDES)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -35,11 +34,10 @@ function s.initial_effect(c)
 end
 	--Specifically lists "Skull Servant" and itself
 s.listed_names={CARD_SKULL_SERVANT,id}
-
 	--Check for level 3 or lower zombie monsters
 function s.repfilter(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_ZOMBIE) and c:IsLevelBelow(3) and c:IsControler(tp) 
-		and not c:IsReason(REASON_REPLACE) and c:IsReason(REASON_EFFECT+REASON_BATTLE)
+	return c:IsFaceup() and c:IsRace(RACE_ZOMBIE) and c:IsLevelBelow(3) and c:IsControler(tp)
+		and not c:IsReason(REASON_REPLACE) and c:IsReason(REASON_EFFECT|REASON_BATTLE)
 end
 	--Activation legality
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -55,24 +53,26 @@ function s.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 	--Check for "Skull Servant" or a monster that lists "Skull Servant"
 function s.thfilter(c)
-	return not c:IsOriginalCode(id) and (c:IsCode(CARD_SKULL_SERVANT) or (c:IsMonster() and c:ListsCode(CARD_SKULL_SERVANT))) and c:IsAbleToHand()
+	return not c:IsCode(id) and c:IsAbleToHand()
+		and (c:IsCode(CARD_SKULL_SERVANT) or (c:IsMonster() and c:ListsCode(CARD_SKULL_SERVANT)))
 end
 	--Activation legality
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return aux.SelectUnselectGroup(g,e,tp,1,2,aux.dncheck,0) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+	if chk==0 then return aux.SelectUnselectGroup(g,e,tp,2,2,aux.dncheck,0) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 	--Add up to 2 "Skull Servant"/monsters that lists "Skull Servant" from deck, then discard 1
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g>0 then
-		local sg=aux.SelectUnselectGroup(g,e,tp,1,2,aux.dncheck,1,tp,HINTMSG_ATOHAND)
+		local sg=aux.SelectUnselectGroup(g,e,tp,2,2,aux.dncheck,1,tp,HINTMSG_ATOHAND)
 		if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 then
 			Duel.ConfirmCards(1-tp,sg)
 			Duel.ShuffleHand(tp)
 			Duel.BreakEffect()
-			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT|REASON_DISCARD)
 		end
 	end
 end

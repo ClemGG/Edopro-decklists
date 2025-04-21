@@ -22,7 +22,7 @@ function s.cfilter(c,e,tp,eg,ep,ev,re,r,rp,chain)
 end
 function s.filter(c,e,tp,eg,ep,ev,re,r,rp,chain)
 	local ref=c:GetReasonEffect()
-	if not c:IsReason(REASON_BATTLE) and not c:IsReason(REASON_RULE) 
+	if not c:IsReason(REASON_BATTLE) and not c:IsReason(REASON_RULE)
 		and (not ref or ref:GetHandler():GetOwner()==tp) then return false end
 	if not c:IsPreviousLocation(LOCATION_ONFIELD) then return false end
 	if c:IsMonster() then
@@ -98,16 +98,16 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if not te or not s.cfilter(tc,e,tp,eg,ep,ev,re,r,rp,chain) then return end
 		local tpe=tc:GetType()
 		if (tpe&TYPE_FIELD)~=0 then
-			local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+			local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 			if Duel.IsDuelType(DUEL_1_FIELD) then
 				if fc then Duel.Destroy(fc,REASON_RULE) end
-				fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc and Duel.Destroy(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 			else
-				fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 			end
-		end 
+		end
 		Duel.ClearTargetCard()
 		local tg=te:GetTarget()
 		e:SetCategory(te:GetCategory())

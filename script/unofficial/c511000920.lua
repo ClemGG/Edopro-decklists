@@ -37,16 +37,16 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ClearTargetCard()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
 	Duel.BreakEffect()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end 
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	if tc:IsType(TYPE_EQUIP+TYPE_CONTINUOUS) then
 		local code=tc:GetOriginalCode()
 		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,1)
 		c:CancelToGrave()
 	end
 	if (tpe&TYPE_FIELD)~=0 then
-		local of=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+		local of=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 		if of then Duel.Destroy(of,REASON_RULE) end
-		of=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		of=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if of and Duel.Destroy(of,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 		Duel.MoveSequence(tc,5)
 	end

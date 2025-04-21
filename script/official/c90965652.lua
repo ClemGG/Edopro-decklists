@@ -1,9 +1,9 @@
--- 二量合成
--- Dimer Synthesis
--- scripted by Hatter
+--二量合成
+--Dimer Synthesis
+--scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Add to hand
+	--Add to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
-	-- Change ATK
+	--Change ATK
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
@@ -21,26 +21,26 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,{id,1})
-	e2:SetCost(aux.bfgcost)
+	e2:SetCost(Cost.SelfBanish)
 	e2:SetTarget(s.atktg)
 	e2:SetOperation(s.atkop)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0xeb}
+s.listed_series={SET_CHEMICRITTER}
 s.listed_names={65959844,25669282}
 s.listed_card_types={TYPE_GEMINI}
 function s.codefilter(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
 end
 function s.chemfilter(c)
-	return c:IsMonster() and c:IsSetCard(0xeb) and c:IsAbleToHand()
+	return c:IsMonster() and c:IsSetCard(SET_CHEMICRITTER) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local f1=Duel.IsExistingMatchingCard(s.codefilter,tp,LOCATION_DECK,0,1,nil,65959844)
 	local f2=Duel.IsExistingMatchingCard(s.codefilter,tp,LOCATION_DECK,0,1,nil,25669282)
 		and Duel.IsExistingMatchingCard(s.chemfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return f1 or f2 end
-	local op=aux.SelectEffect(tp,
+	local op=Duel.SelectEffect(tp,
 		{f1,aux.Stringid(id,2)},
 		{f2,aux.Stringid(id,3)})
 	e:SetLabel(op)
@@ -90,12 +90,12 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESETS_STANDARD_PHASE_END)
 	e1:SetValue(0)
 	tc1:RegisterEffect(e1)
 	if not tc1:IsAttack(0) then return end
 	local tc2=(sg-tc1):GetFirst()
 	if not tc2 or tc2:IsImmuneToEffect(e) then return end
 	--Increase ATK
-	tc2:UpdateAttack(tc1:GetBaseAttack(),RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,c)
+	tc2:UpdateAttack(tc1:GetBaseAttack(),RESETS_STANDARD_PHASE_END,c)
 end

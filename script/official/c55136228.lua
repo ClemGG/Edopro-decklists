@@ -1,4 +1,5 @@
 --剣闘獣の底力
+--Indomitable Gladiator Beast
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -22,13 +23,13 @@ function s.initial_effect(c)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 end
-s.listed_series={0x19}
+s.listed_series={SET_GLADIATOR_BEAST}
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentPhase()==PHASE_DAMAGE and Duel.IsDamageCalculated() then return false end
+	if Duel.IsPhase(PHASE_DAMAGE) and Duel.IsDamageCalculated() then return false end
 	return true
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x19)
+	return c:IsFaceup() and c:IsSetCard(SET_GLADIATOR_BEAST)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.filter(chkc) end
@@ -42,13 +43,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		e1:SetValue(500)
 		tc:RegisterEffect(e1)
 	end
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x19) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(SET_GLADIATOR_BEAST) and c:IsAbleToDeckAsCost()
 end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE,0,2,e:GetHandler()) end

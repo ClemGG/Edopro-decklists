@@ -62,11 +62,7 @@ end
 function s.coinop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	local res=0
-	if c:IsHasEffect(73206827) then
-		res=1-Duel.SelectOption(tp,60,61)
-	else res=Duel.TossCoin(tp,1) end
-	s.arcanareg(c,res)
+	s.arcanareg(c,Arcana.TossCoin(c,tp))
 end
 function s.arcanareg(c,coin)
 	--coin effect
@@ -79,7 +75,7 @@ function s.arcanareg(c,coin)
 	e1:SetCondition(s.thcon)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 	c:RegisterEffect(e1)
 	--
 	local e2=Effect.CreateEffect(c)
@@ -92,13 +88,13 @@ function s.arcanareg(c,coin)
 	e2:SetCondition(s.negcon)
 	e2:SetTarget(s.negtg)
 	e2:SetOperation(s.negop)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e2:SetReset(RESET_EVENT|RESETS_STANDARD)
 	c:RegisterEffect(e2)
-	c:RegisterFlagEffect(36690018,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,coin,63-coin)
+	Arcana.RegisterCoinResult(c,coin)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetFlagEffectLabel(36690018)==1 and c:IsRelateToBattle()
+	return Arcana.GetCoinResult(c)==COIN_HEADS and c:IsRelateToBattle()
 		and c:GetBattleTarget():IsLocation(LOCATION_GRAVE)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -110,7 +106,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end
@@ -120,13 +116,13 @@ function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if not g or not g:IsContains(c) then return false end
-	return c:GetFlagEffectLabel(36690018)==0 and (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER))
+	return Arcana.GetCoinResult(c)==COIN_TAILS and (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsMonsterEffect())
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(id)==0 end
 	if c:IsHasEffect(EFFECT_REVERSE_UPDATE) then
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		c:RegisterFlagEffect(id,RESETS_STANDARD_PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsDestructable() then
@@ -145,7 +141,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD_DISABLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(-1000)
 		c:RegisterEffect(e1)

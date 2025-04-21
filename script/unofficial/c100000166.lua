@@ -1,4 +1,5 @@
 --酸のラスト・マシン・ウィルス
+--Last Machine Acid Virus
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -23,11 +24,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local conf=Duel.GetFieldGroup(tp,0,LOCATION_MZONE+LOCATION_HAND)
+	local conf=Duel.GetFieldGroup(tp,0,LOCATION_MZONE|LOCATION_HAND)
 	if #conf>0 then
 		Duel.ConfirmCards(tp,conf)
 		local dg=conf:Filter(Card.IsRace,nil,RACE_MACHINE)
-		Duel.Destroy(dg,REASON_EFFECT)
+		local ct=Duel.Destroy(dg,REASON_EFFECT)
+		Duel.Damage(1-tp,ct*500,REASON_EFFECT)
 		Duel.ShuffleHand(1-tp)
 	end
 	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
@@ -69,7 +71,8 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if #hg==0 then return end
 	Duel.ConfirmCards(1-ep,hg)
 	local dg=hg:Filter(Card.IsRace,nil,RACE_MACHINE)
-	Duel.Destroy(dg,REASON_EFFECT)
+	local ct=Duel.Destroy(dg,REASON_EFFECT)
+	Duel.Damage(1-tp,ct*500,REASON_EFFECT)
 	Duel.ShuffleHand(ep)
 end
 function s.turncon(e,tp,eg,ep,ev,re,r,rp)

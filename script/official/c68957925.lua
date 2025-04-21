@@ -45,14 +45,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #lg==0 then return end
 	local ct=lg:GetClassCount(Card.GetOriginalAttribute)
 	if ct==1 then
-		local g1=lg:Filter(Card.IsControler,nil,tp)>0
+		local g1=lg:Filter(Card.IsControler,nil,tp)
 		if #g1==0 then return end
 		for tc1 in g1:Iter() do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(500)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			tc1:RegisterEffect(e1)
 		end
 	elseif ct==2 then
@@ -63,7 +63,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(-1000)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			tc2:RegisterEffect(e1)
 		end
 	elseif ct==3 then

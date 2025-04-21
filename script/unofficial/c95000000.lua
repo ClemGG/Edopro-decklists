@@ -145,7 +145,7 @@ function s.stop(e)
 		local hct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		Duel.Remove(c,POS_FACEUP,REASON_RULE)
 		Duel.Hint(HINT_CARD,0,id)
-		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsSetCard),tp,0xff,0,c,0x602)
+		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsSetCard),tp,SET_CLEAR_WING,0,c,0x602)
 		if #g>0 then
 			Duel.SendtoDeck(g,nil,-2,REASON_RULE)
 		end
@@ -231,7 +231,7 @@ function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,rs+REASON_REPLACE)
 end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetTurnPlayer()==tp then return end
+	if Duel.IsTurnPlayer(tp) then return end
 	local a=Duel.GetFlagEffect(1-tp,951)==0
 	local b=Duel.GetFlagEffect(1-tp,952)==0
 	local c=Duel.GetFlagEffect(1-tp,953)==0
@@ -266,7 +266,7 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetCondition(Duel.IsBattlePhase)
+		e1:SetCondition(function() return Duel.IsBattlePhase() end)
 		e1:SetValue(s.atkval)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,1-tp)

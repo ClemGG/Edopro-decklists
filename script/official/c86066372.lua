@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.atkop)
 	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
-	--Destroy
+	--Destroy 1 card the opponent controls
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_DESTROY)
@@ -49,7 +49,7 @@ end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
 	e:SetLabel(0)
-	if g:IsExists(Card.IsType,1,nil,TYPE_LINK) then
+	if g:IsExists(Card.IsLinkMonster,1,nil) then
 		e:SetLabel(1)
 	end
 end
@@ -60,7 +60,7 @@ function s.resetop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_LINK) and e:GetLabelObject():GetLabel()==1
+	return c:IsLinkSummoned() and e:GetLabelObject():GetLabel()==1
 end
 function s.atkfilter(c,e)
 	return c:IsType(TYPE_LINK) and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_REMOVED) and c:IsFaceup())) and c:IsCanBeEffectTarget(e)
@@ -87,18 +87,18 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(tc:GetLink()*1000)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD_DISABLE)
 		c:RegisterEffect(e1)
 	end
 end
 function s.costfilter(c,e,tp)
 	local attr=c:GetAttribute()
-	return c:IsType(TYPE_LINK) and c:IsAbleToRemoveAsCost() and s.attr_list[tp]&attr==0
+	return c:IsLinkMonster() and c:IsAbleToRemoveAsCost() and s.attr_list[tp]&attr==0
 end
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE|LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_MZONE|LOCATION_GRAVE,0,1,1,nil,e,tp)
 	e:SetLabel(g:GetFirst():GetAttribute())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
@@ -110,6 +110,7 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local att=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g,true)
@@ -117,6 +118,6 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	s.attr_list[tp]=s.attr_list[tp]|att
 	for _,str in aux.GetAttributeStrings(att) do
-		e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,str)
+		e:GetHandler():RegisterFlagEffect(0,RESETS_STANDARD_PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,str)
 	end
 end

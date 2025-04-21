@@ -1,4 +1,5 @@
---Persona Shutter - Instant
+--ペルソナ・シャッター－インスタント
+--Instant Shutter
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -18,7 +19,7 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Duel.GetAttacker()
 	if chkc then return chkc==tg end
-	if chk==0 then return tg:IsOnField() and tg:IsCanBeEffectTarget(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	if chk==0 then return tg:IsOnField() and tg:IsCanBeEffectTarget(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,0x11,tg:GetAttack(),tg:GetDefense(),
 		tg:GetLevel(),tg:GetRace(),tg:GetAttribute()) and e:IsHasType(EFFECT_TYPE_ACTIVATE) end
 	Duel.SetTargetCard(tg)
@@ -31,7 +32,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,0x11,tc:GetAttack(),tc:GetDefense(),
 		tc:GetLevel(),tc:GetRace(),tc:GetAttribute()) then return end
-	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
+	c:AddMonsterAttribute(TYPE_MONSTER+TYPE_TRAP,tc:GetAttribute(),tc:GetRace(),tc:GetLevel(),tc:GetAttack(),tc:GetDefense())
 	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
 	c:AddMonsterAttributeComplete()
 	local e1=Effect.CreateEffect(c)

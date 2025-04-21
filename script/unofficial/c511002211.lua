@@ -15,6 +15,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(s.handcon)
+	e2:SetDescription(aux.Stringid(id,0))
 	c:RegisterEffect(e2)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -42,7 +43,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.handcon(e)
-	local g=Duel.GetMatchingGroup(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,0x33)
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,SET_BLACKWING)
 	local ct=g:GetClassCount(Card.GetCode)
 	return ct>=4
 end

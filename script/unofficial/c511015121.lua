@@ -10,7 +10,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-	
+
 	aux.GlobalCheck(s,function()
 		--move to fzone
 		local e2=Effect.CreateEffect(c)
@@ -66,15 +66,15 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.codefilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil,id)
 	local c=g:GetFirst()
 	while c do
-		local fc=Duel.GetFieldCard(c:GetControler(),LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(c:GetControler(),LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 		end
-		fc=Duel.GetFieldCard(1-c:GetControler(),LOCATION_SZONE,5)
+		fc=Duel.GetFieldCard(1-c:GetControler(),LOCATION_FZONE,0)
 		if fc and Duel.GetFlagEffect(c:GetControler(),62765383)>0 then
 			if not Duel.Destroy(fc,REASON_RULE) then Duel.SendtoGrave(fc,REASON_RULE) end
 		end
-	
+
 		Duel.MoveSequence(c,5)
 		c=g:GetNext()
 	end

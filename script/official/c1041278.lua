@@ -1,16 +1,16 @@
--- 分かつ烙印
--- Branded Expulsion
--- Scripted by Hatter
+--分かつ烙印
+--Branded Expulsion
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Special Summon 2 non-Fusion monsters
+	--Special Summon 2 non-Fusion monsters
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E+TIMING_MAIN_END)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E|TIMING_MAIN_END)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -32,14 +32,14 @@ function s.rescon(ag,g1,g2)
 		local ft2=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
 		local res1=ft1>=2 and #(ag&sg)>=2
 		local res2=ft1>0 and ft2>0 and #(sg&g1)>0 and #(sg&g2)>0
-		return res1 or res2,not (res1 or res2)
+		return res1 or res2
 	end
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 and Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then return false end
-	local g1=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp,tp)
-	local g2=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e,tp,1-tp)
+	local g1=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE|LOCATION_REMOVED,LOCATION_GRAVE|LOCATION_REMOVED,nil,e,tp,tp)
+	local g2=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE|LOCATION_REMOVED,LOCATION_GRAVE|LOCATION_REMOVED,nil,e,tp,1-tp)
 	local b1=(#g1>1 and #g2>1) or (#(g1&g2)~=#g1 and #(g1&g2)~=#g2)
 	local ag=g1:Filter(Card.IsCanBeSpecialSummoned,nil,e,0,tp,false,false,POS_FACEUP_DEFENSE)
 	local b2=#ag>1

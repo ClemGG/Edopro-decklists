@@ -1,11 +1,11 @@
--- 相剣大邪－七星龍淵
--- Qixing Long Yuan, the Swordsoul Catastrophe
+--相剣大邪－七星龍淵
+--Swordsoul Sinister Sovereign - Qixing Longyuan
 local s,id=GetID()
 function s.initial_effect(c)
-	--Synchro Summon
 	c:EnableReviveLimit()
+	--Synchro Summon procedure
 	Synchro.AddProcedure(c,nil,1,1,Synchro.NonTunerEx(Card.IsRace,RACE_WYRM),1,99)
-	--Draw
+	--Draw 1 card when a Wyrm monster is Synchro Summoned
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DRAW)
@@ -18,7 +18,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.drtg)
 	e1:SetOperation(s.drop)
 	c:RegisterEffect(e1)
-	--Banish monster
+	--Banish 1 monster and inflict 1200 Damage
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
@@ -27,6 +27,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_CUSTOM+id)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,{id,1})
+	e2:SetCondition(function() return Duel.GetCurrentPhase()~=PHASE_DAMAGE and Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL end)
 	e2:SetTarget(s.rmtg)
 	e2:SetOperation(s.rmop)
 	c:RegisterEffect(e2)
@@ -42,7 +43,7 @@ function s.initial_effect(c)
 	e2a:SetLabelObject(e2)
 	e2a:SetOperation(s.regop)
 	c:RegisterEffect(e2a)
-	--Banish Spell/Trap
+	--Banish Spell/Trap and inflict 1200 Damage
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_DAMAGE)
@@ -56,7 +57,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.cfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSynchroSummoned()
 		and c:IsRace(RACE_WYRM) and c:IsSummonPlayer(tp)
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
@@ -72,7 +73,6 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
---banish monster
 function s.filter(c,tp,e)
 	return c:IsSummonPlayer(1-tp) and c:IsLocation(LOCATION_MZONE) and c:IsAbleToRemove()
 		and (not e or c:IsRelateToEffect(e))
@@ -80,7 +80,7 @@ end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetLabelObject():Filter(s.filter,nil,tp,nil)
 	if chk==0 then return #g>0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE|PHASE_END,0,1)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
@@ -88,7 +88,7 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=e:GetLabelObject()
-	if #g==0 then return end 
+	if #g==0 then return end
 	local bg=g:FilterSelect(tp,s.filter,1,1,nil,tp,e)
 	if #bg>0 and Duel.Remove(bg,POS_FACEUP,REASON_EFFECT)>0 then
 		Duel.Damage(1-tp,1200,REASON_EFFECT)
@@ -99,7 +99,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tg=eg:Filter(s.filter,nil,tp)
 	if #tg>0 then
-		for tc in aux.Next(tg) do
+		for tc in tg:Iter() do
 			tc:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 		end
 		local g=e:GetLabelObject():GetLabelObject()
@@ -110,9 +110,8 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseSingleEvent(e:GetHandler(),EVENT_CUSTOM+id,e,0,tp,tp,0)
 	end
 end
---banish spell/trap
 function s.rmcon2(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) 
+	return ep==1-tp and re:IsSpellTrapEffect() and re:GetHandler():IsRelateToEffect(re)
 end
 function s.rmtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return re:GetHandler():IsAbleToRemove() end

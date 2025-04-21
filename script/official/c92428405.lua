@@ -1,9 +1,9 @@
 --覇王龍の魂
---The Supreme King's Soul
+--Soul of the Supreme King
 --Scripted by Eerie Code
 local s,id=GetID()
 function s.initial_effect(c)
-	--Special Summon "Supreme king Z-Arc"
+	--Special Summon "Supreme King Z-Arc"
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -27,15 +27,15 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
-s.listed_names={13331639}
-s.listed_series={0x10f2,0x2073,0x2017,0x1046}
-local LOCATION_HDEG=LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE
+s.listed_names={CARD_ZARC} --Supreme King Z-ARC
+s.listed_series={SET_PENDULUM_DRAGON,SET_XYZ_DRAGON,SET_SYNCHRO_DRAGON,SET_FUSION_DRAGON}
+local LOCATION_HDEG=LOCATION_HAND|LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function s.filter(c,e,tp)
-	return c:IsCode(13331639) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsCode(CARD_ZARC) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
@@ -50,13 +50,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetReset(RESET_EVENT|RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 		--Return it to the Extra Deck
 		local e3=Effect.CreateEffect(c)
@@ -69,13 +69,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCondition(s.tdcon)
 		e3:SetOperation(s.tdop)
 		Duel.RegisterEffect(e3,tp)
-		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
+		tc:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end
 	Duel.SpecialSummonComplete()
 end
 function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(id)>0 then
+	if tc:HasFlagEffect(id) then
 		return Duel.GetTurnCount()==e:GetLabel()
 	else
 		e:Reset()
@@ -84,23 +84,23 @@ function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsActiveType(TYPE_SPELL)
+	return rp==1-tp and re:IsSpellEffect()
 end
 function s.spcfilter(c,e,tp)
-	return c:IsFaceup() and c:IsCode(13331639) and c:IsAbleToRemoveAsCost()
+	return c:IsFaceup() and c:IsCode(CARD_ZARC) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HDEG,0,1,nil,e,tp,c)
 end
 function s.spfilter(c,e,tp,rmc)
 	local loc_extr=c:IsLocation(LOCATION_EXTRA)
 	return c:IsMonster() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (c:IsSetCard(0x10f2) or c:IsSetCard(0x2073) or c:IsSetCard(0x2017) or c:IsSetCard(0x1046))
+		and c:IsSetCard({SET_PENDULUM_DRAGON,SET_XYZ_DRAGON,SET_SYNCHRO_DRAGON,SET_FUSION_DRAGON})
 		and ((not loc_extr and Duel.GetMZoneCount(tp,rmc)>0) or (loc_extr and Duel.GetLocationCountFromEx(tp,tp,rmc,c)>0))
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(s.spcfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -122,8 +122,8 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HDEG,0,nil,e,tp)
 	local ft=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE)+Duel.GetLocationCountFromEx(tp,tp),4)
-	if #g>0 and ft>0 then 
-		local checkfunc=aux.PropertyTableFilter(Card.GetSetCard,0x10f2,0x2073,0x2017,0x1046)
+	if #g>0 and ft>0 then
+		local checkfunc=aux.PropertyTableFilter(Card.GetSetCard,SET_PENDULUM_DRAGON,SET_XYZ_DRAGON,SET_SYNCHRO_DRAGON,SET_FUSION_DRAGON)
 		if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then ft=1 end
 		local sg=aux.SelectUnselectGroup(g,e,tp,1,ft,s.rescon(checkfunc),1,tp,HINTMSG_SPSUMMON,s.rescon(checkfunc))
 		if #sg==0 then return end

@@ -1,4 +1,5 @@
---機皇神マシニクル∞
+--機皇神マシニクル∞³ (Anime)
+--Meklord Astro Mekanikle (Anime)
 local s,id=GetID()
 function s.initial_effect(c)
 	--equip
@@ -28,10 +29,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 	--gain eff
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(10032958,0))
+	e5:SetDescription(aux.Stringid(id,2))
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(function(_,tp) return Duel.IsTurnPlayer(tp) end)
 	e5:SetCost(s.effcost)
 	e5:SetTarget(s.efftg)
 	e5:SetOperation(s.effop)
@@ -79,7 +81,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.IsTurnPlayer(tp)
 end
 function s.dcfilter(c)
 	return c:GetFlagEffect(id)~=0 and c:IsAbleToGraveAsCost()
@@ -133,11 +135,11 @@ function s.repfilter(c)
 end
 function s.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return not c:IsReason(REASON_REPLACE) 
-		and Duel.IsExistingMatchingCard(s.repfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return not c:IsReason(REASON_REPLACE)
+		and Duel.IsExistingMatchingCard(s.repfilter,tp,LOCATION_MZONE|LOCATION_GRAVE,0,1,nil) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,s.repfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.repfilter,tp,LOCATION_MZONE|LOCATION_GRAVE,0,1,1,nil)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
 		return true
 	else return false end

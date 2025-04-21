@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	aux.AddSkillProcedure(c,1,false,s.flipcon,s.flipop)
 end
 function s.cfilter(c)
-	return (c:GetAttack()>0 or c:GetAttack()>0) and c:IsFaceup()
+	return (c:GetAttack()>0 or c:GetAttack()>0) and c:IsFaceup() and c:IsMonster()
 end
 function s.flipcon(e,tp,eg,ep,ev,re,r,rp)
 	--opd check
@@ -24,7 +24,7 @@ function s.flipop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END)
 		e1:SetValue(-500)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()

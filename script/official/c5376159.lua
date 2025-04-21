@@ -1,7 +1,6 @@
 --スカーレッド・レイン
 --Red Reign
 --Scripted by Eerie Code
-
 local s,id=GetID()
 function s.initial_effect(c)
 	--Banish all monsters on the field, except monster(s) with the highest level
@@ -35,8 +34,9 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local exg=g:GetMaxGroup(Card.GetLevel) or Group.CreateGroup()
-	if chk==0 then return #(g-exg)>0 end
+	local fdwng,fupg=g:Split(Card.IsFacedown,nil)
+	local exg=fupg:GetMaxGroup(Card.GetLevel) or Group.CreateGroup()
+	if chk==0 then return #fdwng>0 or #(g-exg)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,(g-exg),#(g-exg),tp,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -59,7 +59,7 @@ function s.immop(tc,c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetValue(s.efilter)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESETS_STANDARD_PHASE_END)
 	tc:RegisterEffect(e1)
 end
 function s.efilter(e,te)
@@ -67,7 +67,7 @@ function s.efilter(e,te)
 end
 function s.thcfilter(c,tp)
 	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO)
-		and c:IsControler(tp) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
+		and c:IsControler(tp) and c:IsSynchroSummoned()
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.thcfilter,1,nil,tp)

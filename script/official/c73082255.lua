@@ -4,7 +4,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	Xyz.AddProcedure(c,nil,8,2,nil,nil,99)
+	Xyz.AddProcedure(c,nil,8,2,nil,nil,Xyz.InfiniteMats)
 	--lv change
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,id)
-	e3:SetCost(aux.dxmcostgen(1,1,nil))
+	e3:SetCost(Cost.Detach(1,1,nil))
 	e3:SetTarget(s.gytg)
 	e3:SetOperation(s.gyop)
 	c:RegisterEffect(e3,false,REGISTER_FLAG_DETACH_XMAT)
@@ -40,14 +40,17 @@ function s.lvtg(e,c)
 end
 function s.lvval(e,c,rc)
 	local lv=c:GetLevel()
-	if rc:IsCode(id) then return 8
-	else return lv end
+	if rc:IsCode(id) then
+		return 8
+	else
+		return lv
+	end
 end
 function s.tgval(e,re,rp)
 	local rc=re:GetHandler()
 	local loc=re:GetActivateLocation()
-	return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and not rc:IsSummonLocation(LOCATION_GRAVE)
-		and rc:IsSummonType(SUMMON_TYPE_SPECIAL)
+	return re:IsMonsterEffect() and loc==LOCATION_MZONE and not rc:IsSummonLocation(LOCATION_GRAVE)
+		and rc:IsSpecialSummoned()
 end
 function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,4) and Duel.IsPlayerCanDiscardDeck(1-tp,4) end
@@ -63,7 +66,7 @@ function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	local gy2=Duel.DiscardDeck(1-tp,4,REASON_EFFECT)
 	if gy1==0 and gy2==0 then return end
 	og:Merge(Duel.GetOperatedGroup())
-	if #og>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and og:IsExists(s.spfilter,1,nil,e,tp)
+	if #og>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and og:IsExists(aux.NecroValleyFilter(s.spfilter),1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -18,14 +18,14 @@ function s.filter(c,e,tp,eg,ep,ev,re,r,rp,b)
 	local te=c:CheckActivateEffect(false,false,false)
 	if ((b and ft>1) or (not b and ft>0)) and c:IsSpell()
 		and not c:IsType(TYPE_FIELD) and te then
-		if c:IsSetCard(0x95) then
+		if c:IsSetCard(SET_RANK_UP_MAGIC) then
 			local tg=te:GetTarget()
 			return not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)
 		else
 			return true
 		end
 	end
-	if c:IsType(TYPE_FIELD) and Duel.CheckLocation(tp,LOCATION_SZONE,5) and te then return true end
+	if c:IsType(TYPE_FIELD) and Duel.CheckLocation(tp,LOCATION_FZONE,0) and te then return true end
 	return false
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -55,7 +55,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	tc:CreateEffectRelation(te)
 	if co then co(te,tp,eg,ep,ev,re,r,rp,1) end
 	if tg then
-		if tc:IsSetCard(0x95) then
+		if tc:IsSetCard(SET_RANK_UP_MAGIC) then
 			tg(e,tp,eg,ep,ev,re,r,rp,1)
 		else
 			tg(te,tp,eg,ep,ev,re,r,rp,1)
@@ -69,7 +69,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if op then
-		if tc:IsSetCard(0x95) then
+		if tc:IsSetCard(SET_RANK_UP_MAGIC) then
 			op(e,tp,eg,ep,ev,re,r,rp)
 		else
 			op(te,tp,eg,ep,ev,re,r,rp)

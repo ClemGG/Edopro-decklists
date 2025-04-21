@@ -1,4 +1,5 @@
 --プリベント・スター
+--Prevention Star
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -37,28 +38,27 @@ function s.initial_effect(c)
 	end)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	for tc in aux.Next(eg) do
+	for tc in eg:Iter() do
 		if tc:IsPreviousPosition(POS_FACEUP_ATTACK) and tc:IsPosition(POS_FACEUP_DEFENSE) then
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			tc:RegisterFlagEffect(id,RESETS_STANDARD_PHASE_END,0,1)
 		end
 	end
 end
 function s.eqlimit(e,c)
-	return c:GetFlagEffect(id)~=0 or c:GetFlagEffect(id+1)~=0
+	return c:HasFlagEffect(id) or c:HasFlagEffect(id+1)
 end
 function s.filter(c)
-	return c:IsFaceup() and c:GetFlagEffect(id)~=0
+	return c:IsFaceup() and c:HasFlagEffect(id)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingTarget(nil,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
-	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	e:SetLabelObject(g:GetFirst())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
+	Duel.SelectTarget(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
@@ -73,25 +73,26 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=re:GetLabelObject()
 	if tc and c:IsRelateToEffect(re) and tc:IsRelateToEffect(re) and tc:IsFaceup() and Duel.Equip(tp,c,tc) then
-		tc:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
+		tc:RegisterFlagEffect(id+1,RESET_EVENT|RESETS_STANDARD,0,1)
 	end
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local dc=e:GetLabelObject()
+	local tc=e:GetLabelObject()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tc=g:GetFirst()
-	if dc==tc then tc=g:GetNext() end
+	local dc=g:GetFirst()
+	if dc==tc then dc=g:GetNext() end
+	e:SetLabelObject(dc)
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		if dc:IsRelateToEffect(e) then
-			--tc:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD,0,1)
+			--tc:RegisterFlagEffect(id+1,RESET_EVENT|RESETS_STANDARD,0,1)
 			c:SetCardTarget(dc)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_OWNER_RELATE)
 			e1:SetRange(LOCATION_MZONE)
 			e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			e1:SetCondition(s.rcon)
 			dc:RegisterEffect(e1,true)
 			local e2=e1:Clone()

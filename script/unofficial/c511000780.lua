@@ -13,11 +13,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	return tc and tc:GetCounter(0x91)>3
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	if chk==0 then return tc and tc:IsCanRemoveCounter(tp,0x91,tc:GetCounter(0x91),REASON_COST) end
 	tc:RemoveCounter(tp,0x91,tc:GetCounter(0x91),REASON_COST)
 end
@@ -29,7 +29,7 @@ function s.stfilter(c)
 	return c:IsSpellTrap() and c:IsAbleToHand()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.monfilter,tp,LOCATION_GRAVE,0,1,nil) 
+	if chk==0 then return Duel.IsExistingMatchingCard(s.monfilter,tp,LOCATION_GRAVE,0,1,nil)
 		and Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_GRAVE)
 end
@@ -51,7 +51,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(100100090)
 	e1:SetTargetRange(1,0)
-	if Duel.GetTurnPlayer()==tp then
+	if Duel.IsTurnPlayer(tp) then
 		e1:SetLabel(Duel.GetTurnCount())
 		e1:SetCondition(s.turncon1)
 		res=4

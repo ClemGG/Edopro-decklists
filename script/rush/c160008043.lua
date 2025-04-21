@@ -1,6 +1,5 @@
---Hormone GunMcQueen, the Magnificent Shichirin
 --荒野の七輪ホルモン・ガンマックイーン
-
+--Hormone GunMcQueen, the Magnificent Shichirin
 local s,id=GetID()
 function s.initial_effect(c)
 	--fusion material
@@ -31,7 +30,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 end
 function s.desfilter(c)
-	return c:IsLevelBelow(9) and c:IsFaceup() and (not c:IsAttribute(ATTRIBUTE_FIRE))
+	return c:IsLevelBelow(9) and c:IsFaceup() and (not c:IsAttribute(ATTRIBUTE_FIRE)) and c:IsNotMaximumModeSide()
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -1,8 +1,8 @@
 --ヴァンパイア・フロイライン
---Vampire Fraulen
+--Vampire Fraulein
 local s,id=GetID()
 function s.initial_effect(c)
-	--special summon
+	--Special Summon itself from the hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg1)
 	e1:SetOperation(s.spop1)
 	c:RegisterEffect(e1)
-	--atk up
+	--Increase ATK/DEF per multiples of 100
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
@@ -24,18 +24,19 @@ function s.initial_effect(c)
 	e2:SetCost(s.atkcost)
 	e2:SetOperation(s.atkop)
 	c:RegisterEffect(e2)
-	--special summon
+	--Register when destroying a monster
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_BATTLE_DESTROYING)
 	e3:SetOperation(s.regop)
 	c:RegisterEffect(e3)
+	--Special summon the monsters this card destroyed by battle
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,2))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_PHASE+PHASE_BATTLE)
+	e4:SetCode(EVENT_PHASE|PHASE_BATTLE)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
 	e4:SetCondition(s.spcon2)
@@ -72,7 +73,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ac=Duel.AnnounceNumber(tp,table.unpack(t))
 	Duel.PayLPCost(tp,ac)
 	e:SetLabel(ac)
-	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
+	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE|PHASE_DAMAGE_CAL,0,1)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=Duel.GetAttacker()
@@ -80,7 +81,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL)
+	e1:SetReset(RESET_PHASE|PHASE_DAMAGE_CAL)
 	e1:SetValue(e:GetLabel())
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -88,7 +89,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e2)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
+	e:GetHandler():RegisterFlagEffect(id+1,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_BATTLE,0,1)
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(id+1)~=0
@@ -105,10 +106,10 @@ function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local tg=Duel.GetMatchingGroup(s.spfilter2,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp,e:GetHandler(),Duel.GetTurnCount())
-	if ft<=0 then return end
+	if ft==0 then return end
 	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then ft=1 end
 	local g=nil
+	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.spfilter2),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp,e:GetHandler(),Duel.GetTurnCount())
 	if #tg>ft then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		g=tg:Select(tp,ft,ft,nil)

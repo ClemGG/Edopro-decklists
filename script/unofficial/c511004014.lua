@@ -10,7 +10,7 @@ function s.op(oc)
 	--To controler's grave
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE) 
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EFFECT_SEND_REPLACE)
 	e1:SetTarget(s.reptg)
 	e1:SetValue(s.repval)
@@ -75,7 +75,7 @@ function s.op(oc)
 	local e6=Effect.GlobalEffect()
 	e6:SetType(EFFECT_TYPE_FIELD)
 	e6:SetCode(EFFECT_CANNOT_ATTACK)
-	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE) 
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e6:SetTarget(function(e,c) return c:IsStatus(STATUS_SPSUMMON_TURN) and (c:IsSummonLocation(LOCATION_EXTRA) or (c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsSummonLocation(LOCATION_GRAVE))) and not c:IsHasEffect(511004016) end)
 	Duel.RegisterEffect(e6,0)
@@ -101,7 +101,7 @@ function s.op(oc)
 	--Negate
 	local e8=Effect.GlobalEffect()
 	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE) 
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e8:SetCode(EVENT_CHAIN_SOLVING)
 	e8:SetOperation(s.negop)
 	Duel.RegisterEffect(e8,0)
@@ -125,7 +125,7 @@ function s.op(oc)
 	--Attack
 	local e11=Effect.GlobalEffect()
 	e11:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE) 
+	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e11:SetCode(EVENT_LEAVE_FIELD)
 	e11:SetCondition(s.sacrificeEscapeCon)
 	e11:SetOperation(function() Duel.NegateAttack() end)
@@ -133,9 +133,9 @@ function s.op(oc)
 	local e11a=e11:Clone()
 	e11a:SetCode(EVENT_BE_MATERIAL)
 	Duel.RegisterEffect(e11a,0)
-	if Duel.SelectYesNo(0,aux.Stringid(4013,14)) and Duel.SelectYesNo(1,aux.Stringid(4013,14)) then
-		Duel.Hint(HINT_MESSAGE,0,aux.Stringid(4013,15))
-		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(4013,15))
+	if Duel.SelectYesNo(0,aux.Stringid(id,0)) and Duel.SelectYesNo(1,aux.Stringid(id,0)) then
+		Duel.Hint(HINT_MESSAGE,0,aux.Stringid(id,1))
+		Duel.Hint(HINT_MESSAGE,1,aux.Stringid(id,1))
 		--manga rules
 		local e12=Effect.GlobalEffect()
 		e12:SetType(EFFECT_TYPE_FIELD)
@@ -323,7 +323,7 @@ function s.aclimit(e,re,tp)
 		return Duel.IsExistingMatchingCard(s.acfilter,tp,0xff,0,1,nil)
 	end
 	if re:IsActiveType(TYPE_FIELD) then
-		return not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
+		return not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
 	elseif re:IsActiveType(TYPE_PENDULUM) then
 		return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4
 	end
@@ -332,11 +332,11 @@ end
 function s.setlimit(e,c,tp)
 	return (c:IsLocation(LOCATION_HAND) and ((c:IsSpell() and Duel.GetFlagEffect(tp,TYPE_SPELL)>0)
 		or (c:IsTrap() and Duel.GetFlagEffect(tp,TYPE_TRAP)>(Duel.IsPlayerAffectedByEffect(tp,511004017) and 1 or 0))))
-		or (c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_SZONE,5) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4)
+		or (c:IsType(TYPE_FIELD) and not Duel.GetFieldCard(tp,LOCATION_FZONE,0) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>4)
 end
 function s.aclimit1(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and re:GetHandler():IsPreviousLocation(LOCATION_HAND) then
-		re:GetHandler():RegisterFlagEffect(EFFECT_TYPE_ACTIVATE,RESET_PHASE+PHASE_END,0,1)
+		re:GetHandler():RegisterFlagEffect(EFFECT_TYPE_ACTIVATE,RESET_PHASE|PHASE_END,0,1)
 	end
 end
 function s.aclimit2(e,tp,eg,ep,ev,re,r,rp)
@@ -348,10 +348,10 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local hg=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_HAND)
 	if #hg>0 then
 		if hg:IsExists(Card.IsSpell,1,nil) then
-			Duel.RegisterFlagEffect(rp,TYPE_SPELL,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(rp,TYPE_SPELL,RESET_PHASE|PHASE_END,0,1)
 		end
 		if hg:IsExists(Card.IsTrap,1,nil) then
-			Duel.RegisterFlagEffect(rp,TYPE_TRAP,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(rp,TYPE_TRAP,RESET_PHASE|PHASE_END,0,1)
 		end
 	end
 end

@@ -1,9 +1,9 @@
--- クシャトリラ・ユニコーン
--- Kshatri-La Unicorn
--- Scripted by Hatter
+--クシャトリラ・ユニコーン
+--Kashtira Unicorn
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Special Summon this card
+	--Special Summon this card
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(s.spcon)
 	c:RegisterEffect(e1)
-	-- Search 1 "Kshatri-la" Spell
+	--Search 1 "Kashtira" Spell
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
-	-- Banish 1 card face-down
+	--Banish 1 card from the opponent's Deck, face-down
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_REMOVE)
@@ -35,18 +35,18 @@ function s.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_CHAIN_SOLVED)
+	e4:SetCode(EVENT_CHAINING)
 	e4:SetCondition(s.rmeffcon)
 	c:RegisterEffect(e4)
 end
-s.listed_series={0x18a}
+s.listed_series={SET_KASHTIRA}
 function s.spcon(e,c)
 	if c==nil then return true end
 	local tp=e:GetHandlerPlayer()
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0,nil)==0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x18a) and c:IsSpell() and c:IsAbleToHand()
+	return c:IsSetCard(SET_KASHTIRA) and c:IsSpell() and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -76,5 +76,5 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleExtra(1-tp)
 end
 function s.rmeffcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp and re:IsActiveType(TYPE_MONSTER)
+	return ep==1-tp and re:IsMonsterEffect()
 end

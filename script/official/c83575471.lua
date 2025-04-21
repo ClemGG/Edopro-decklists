@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.listed_names={CARD_ADVANCED_DARK}
-s.listed_series={0x5034}
+s.listed_series={SET_ADVANCED_CRYSTAL_BEAST}
 function s.tgcon(e)
 	return not Duel.IsEnvironment(CARD_ADVANCED_DARK)
 end
@@ -47,13 +47,13 @@ function s.replaceop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
 	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 	c:RegisterEffect(e1)
-	Duel.RaiseEvent(c,EVENT_CUSTOM+47408488,e,0,tp,0,0)
+	Duel.RaiseEvent(c,EVENT_CUSTOM+CARD_CRYSTAL_TREE,e,0,tp,0,0)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
+	return e:GetHandler():IsContinuousSpell()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -62,7 +62,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x5034) and c:IsOriginalType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(SET_ADVANCED_CRYSTAL_BEAST) and c:IsOriginalType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -70,7 +70,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		--Special Summon as many "Advanced Crystal Beast" monsters as possible
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		local sg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_SZONE,0,nil,e,tp)
-		if  #sg==0 or ft<=0 then return end
+		if #sg==0 or ft<=0 then return end
 		if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then ft=1 end
 		if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

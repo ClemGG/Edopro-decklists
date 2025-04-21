@@ -8,9 +8,10 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	--Change battle position/attack target
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_BATTLE_START)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(function(e,tp) return Duel.GetBattleMonster(tp)==e:GetHandler() end)
 	e1:SetTarget(s.postg)
 	e1:SetOperation(s.posop)
 	c:RegisterEffect(e1)
@@ -113,19 +114,19 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 				local loc=LOCATION_SZONE
 				if (tpe&TYPE_FIELD)~=0 then
 					loc=LOCATION_FZONE
-					local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+					local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 					if Duel.IsDuelType(DUEL_1_FIELD) then
-						if fc then 
-							Duel.Destroy(fc,REASON_RULE) 
+						if fc then
+							Duel.Destroy(fc,REASON_RULE)
 						end
-						fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-						if fc and Duel.Destroy(fc,REASON_RULE)==0 then 
-							Duel.SendtoGrave(tc,REASON_RULE) 
+						fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+						if fc and Duel.Destroy(fc,REASON_RULE)==0 then
+							Duel.SendtoGrave(tc,REASON_RULE)
 						end
 					else
-						fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-						if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then 
-							Duel.SendtoGrave(tc,REASON_RULE) 
+						fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+						if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then
+							Duel.SendtoGrave(tc,REASON_RULE)
 						end
 					end
 				end

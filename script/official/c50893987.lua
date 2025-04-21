@@ -1,4 +1,5 @@
 --剣闘獣ティゲル
+--Gladiator Beast Tygerius
 local s,id=GetID()
 function s.initial_effect(c)
 	--search
@@ -20,16 +21,16 @@ function s.initial_effect(c)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0x19}
+s.listed_series={SET_GLADIATOR_BEAST}
 function s.costfilter(c)
-	return c:IsSetCard(0x19) and c:IsDiscardable()
+	return c:IsSetCard(SET_GLADIATOR_BEAST) and c:IsDiscardable()
 end
 function s.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,s.costfilter,1,1,REASON_DISCARD+REASON_COST,nil)
 end
 function s.scfilter(c)
-	return c:IsSetCard(0x19) and c:IsMonster() and c:IsAbleToHand()
+	return c:IsSetCard(SET_GLADIATOR_BEAST) and c:IsMonster() and c:IsAbleToHand()
 end
 function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.scfilter,tp,LOCATION_DECK,0,1,nil) end

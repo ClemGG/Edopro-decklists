@@ -1,5 +1,5 @@
---トリックスター・トリート (Anime)
---Trickstar Treat (Anime)
+--トリックスター・トリート
+--Trickstar Treat
 --scripted by Larry126, fixed by MLD
 local s,id=GetID()
 function s.initial_effect(c)
@@ -92,7 +92,7 @@ function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
 end
 function s.cfilter(c,tp)
-	return c:IsTrap() and c:IsSetCard(0xfb) and not c:IsPublic() and c:IsSSetable() 
+	return c:IsTrap() and c:IsSetCard(SET_TRICKSTAR) and not c:IsPublic() and c:IsSSetable()
 		and c:GetFlagEffect(511600044)==0
 end
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -128,6 +128,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+		e2:SetDescription(aux.Stringid(id,1))
 		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)

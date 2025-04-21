@@ -1,7 +1,6 @@
---Infection Extension
 --インフェクション・エクステンション
---By Shad3
---cleaned up and fixed by MLD and edo9300
+--Infection Extension
+--Scripted by Shad3, cleaned up and fixed by MLD and edo9300
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -27,6 +26,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)]]
 	--IBToken Destroyed
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(id,1))
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_SZONE)
@@ -41,14 +41,14 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetActivityCount(tp,ACTIVITY_SUMMON)==0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,511005082,0,TYPES_TOKEN,300,300,1,RACE_FIEND,ATTRIBUTE_DARK) 
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,511005082,0,TYPES_TOKEN,300,300,1,RACE_FIEND,ATTRIBUTE_DARK)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or not Duel.IsPlayerCanSpecialSummonMonster(tp,511005082,0,TYPES_TOKEN,300,300,1,RACE_FIEND,ATTRIBUTE_DARK) 
+	if not c:IsRelateToEffect(e) or not Duel.IsPlayerCanSpecialSummonMonster(tp,511005082,0,TYPES_TOKEN,300,300,1,RACE_FIEND,ATTRIBUTE_DARK)
 		or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local tc=Duel.CreateToken(tp,511005082)
 	if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
@@ -56,13 +56,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PRE_BATTLE_DAMAGE)
 		e1:SetOperation(s.damop)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	end
 	Duel.SpecialSummonComplete()
 end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
-	if ev>0 and Duel.SelectYesNo(tp,aux.Stringid(4001,14)) then
+	if ev>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.ChangeBattleDamage(tp,0)
 		Duel.ChangeBattleDamage(1-tp,0)
 	end

@@ -1,9 +1,9 @@
 --獣翼剛王セイス
---Seis the Mighty King of Bestial Wings
+--Bendorbreak the Conqueror
 --scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- atk/def change
+	--1 face-up monster your opponent controls loses ATK/DEF equal to the number of cards sent to the GY x 1000
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
@@ -17,39 +17,36 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-
 	return Duel.GetFieldGroupCountRush(tp,LOCATION_SZONE,0)==Duel.GetMatchingGroupCountRush(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_SZONE,0,1,nil) end
 end
-function s.tgfilter(c)
-	return c:GetAttack()>0 or c:GetDefense()>0
-end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.FilterMaximumSideFunctionEx(aux.FaceupFilter(s.tgfilter)),tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.FilterMaximumSideFunctionEx(Card.IsFaceup),tp,0,LOCATION_MZONE,1,nil) end
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	--requirement
+	--Requirement
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_SZONE,0,1,3,nil)
 	local sent=Duel.SendtoGrave(tg,REASON_COST)
 	if sent>0 then
-		--effect
+		--Effect
+		local c=e:GetHandler()
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-			local g=Duel.SelectMatchingCard(tp,aux.FilterMaximumSideFunctionEx(aux.FaceupFilter(s.tgfilter)),tp,0,LOCATION_MZONE,1,1,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATKDEF)
+			local g=Duel.SelectMatchingCard(tp,aux.FilterMaximumSideFunctionEx(Card.IsFaceup),tp,0,LOCATION_MZONE,1,1,nil)
 			if #g>0 then
 				Duel.HintSelection(g)
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)
 				e1:SetValue(-1000*sent)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				g:GetFirst():RegisterEffectRush(e1)
+				e1:SetReset(RESETS_STANDARD_PHASE_END)
+				g:GetFirst():RegisterEffect(e1)
 				local e2=e1:Clone()
 				e2:SetCode(EFFECT_UPDATE_DEFENSE)
-				g:GetFirst():RegisterEffectRush(e2)
+				g:GetFirst():RegisterEffect(e2)
 			end
 		end
 	end

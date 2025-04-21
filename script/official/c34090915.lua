@@ -1,5 +1,5 @@
 --復烙印
---Rebranded
+--Branded Regained
 --scripted by Naim
 local s,id=GetID()
 function s.initial_effect(c)
@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_CUSTOM+id)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,id)
+	e2:SetCondition(function() return not Duel.IsPhase(PHASE_DAMAGE) end)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
@@ -49,14 +50,18 @@ function s.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
-s.listed_series={0x189}
+s.listed_series={SET_BYSTIAL}
 function s.cfilter(c,e)
-	return c:IsAttribute(ATTRIBUTE_DARK+ATTRIBUTE_LIGHT) and c:IsFaceup() and c:IsAbleToDeck() and not c:IsType(TYPE_TOKEN) and c:IsCanBeEffectTarget(e)
+	return c:IsAttribute(ATTRIBUTE_DARK|ATTRIBUTE_LIGHT) and c:IsFaceup()
+		and (not c:IsPreviousLocation(LOCATION_ONFIELD) or (c:GetPreviousTypeOnField()&TYPE_MONSTER>0
+		and c:GetPreviousAttributeOnField()&(ATTRIBUTE_DARK|ATTRIBUTE_LIGHT)>0))
+		and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e) and c:IsLocation(LOCATION_REMOVED)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPhase(PHASE_DAMAGE) then return end
 	local tg=eg:Filter(s.cfilter,nil,e)
 	if #tg>0 then
-		for tc in aux.Next(tg) do
+		for tc in tg:Iter() do
 			tc:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 		end
 		local g=e:GetLabelObject():GetLabelObject()
@@ -72,8 +77,8 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=e:GetLabelObject():Filter(s.cfilter,nil,e)
-	if chkc then return g:IsContains(chkc) and chkc:IsLocation(LOCATION_REMOVED) and s.cfilter(chkc,e) end
-	if chk==0 then return #g>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.GetFlagEffect(tp,id)==0 end
+	if chkc then return g:IsContains(chkc) and s.cfilter(chkc,e) end
+	if chk==0 then return #g>0 and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local tg=g:Select(tp,1,1,nil)
@@ -83,7 +88,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK|LOCATION_EXTRA) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
@@ -91,7 +96,7 @@ function s.spcond(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x189) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(SET_BYSTIAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.spfilter(chkc,e,tp) end

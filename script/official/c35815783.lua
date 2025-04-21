@@ -1,5 +1,5 @@
 --魔鍵施解
---Magikey Unsealing
+--Magikey World
 --Scripted by Eerie Code
 local s,id=GetID()
 function s.initial_effect(c)
@@ -11,17 +11,16 @@ function s.initial_effect(c)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-	--indes
+	--Prevent the destruction of non-Token Normal monsters
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetCountLimit(1)
 	e2:SetTarget(s.indtg)
 	e2:SetValue(s.indval)
 	c:RegisterEffect(e2)
-	--search
+	--Search 1 "Magikey Maftea" then place 1 card from the hand in the bottom of the deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -31,13 +30,12 @@ function s.initial_effect(c)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
-s.listed_series={0x167}
-s.listed_names={99426088}
+s.listed_series={SET_MAGIKEY}
+s.listed_names={99426088} --Magikey Maftea
 function s.thfilter(c)
-	return c:IsMonster() and c:IsSetCard(0x167) and c:IsAbleToHand()
+	return c:IsMonster() and c:IsSetCard(SET_MAGIKEY) and c:IsAbleToHand()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -63,11 +61,11 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,1)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if not (tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0) then return end
 	Duel.ConfirmCards(1-tp,tc)
+	Duel.ShuffleHand(tp)
 	Duel.ShuffleDeck(tp)
 	Duel.DisableShuffleCheck()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

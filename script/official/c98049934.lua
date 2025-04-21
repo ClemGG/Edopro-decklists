@@ -1,12 +1,12 @@
--- エピュアリィ・ビューティ
--- Epurery Beauty
--- Scripted by Hatter
+--エピュアリィ・ビューティ
+--Epurrely Beauty
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	-- 2 Level 2 monsters
+	--Xyz Summon procedure: 2 Level 2 monsters
 	Xyz.AddProcedure(c,nil,2,2)
-	-- Negate 1 monster's effects
+	--Negate 1 monster's effects
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DISABLE)
@@ -21,9 +21,9 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER|TIMING_MAIN_END)
 	c:RegisterEffect(e2)
-	-- Attach "Purery" Quick-Play Spell
+	--Attach "Purrely" Quick-Play Spell
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_POSITION)
@@ -36,8 +36,8 @@ function s.initial_effect(c)
 	e3:SetOperation(s.qpovop)
 	c:RegisterEffect(e3)
 end
-s.listed_names={29599813}
-s.listed_series={0x18d}
+s.listed_names={29599813} --Purrely Pretty Memory
+s.listed_series={SET_PURRELY}
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:IsHasType(EFFECT_TYPE_QUICK_O)==e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,29599813)
 end
@@ -55,12 +55,12 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		local c=e:GetHandler()
-		-- Negate its effects
+		--Negate its effects
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
@@ -71,7 +71,7 @@ end
 function s.qpovcon(e,tp,eg,ep,ev,re,r,rp)
 	if rp==1-tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
 	local rc=re:GetHandler()
-	return rc:IsSetCard(0x18d) and rc:GetType()==TYPE_SPELL+TYPE_QUICKPLAY
+	return rc:IsSetCard(SET_PURRELY) and rc:IsQuickPlaySpell()
 		and rc:IsOnField() and rc:IsCanBeXyzMaterial(e:GetHandler(),tc,REASON_EFFECT)
 end
 function s.qpovtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -1,5 +1,5 @@
--- Showering Infergyo
--- シャワーリング・インフェルギョ
+--シャワーリング・インフェルギョ
+--Showering Seaferno
 local s,id=GetID()
 function s.initial_effect(c)
 	-- fusion
@@ -7,6 +7,7 @@ function s.initial_effect(c)
 	Fusion.AddProcMix(c,true,true,160008025,CARD_JELLYPLUG)
 	--All pyro monsters you control gain ATK
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
@@ -42,7 +43,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)
 				e1:SetValue(800)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+				e1:SetReset(RESETS_STANDARD_PHASE_END)
 				c:RegisterEffect(e1)
 				local ag=Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsLevel,8),tp,0,LOCATION_MZONE,nil)
 				for tc in ag:Iter() do
@@ -50,7 +51,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_UPDATE_ATTACK)
 					e1:SetValue(-800)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+					e1:SetReset(RESETS_STANDARD_PHASE_END)
 					tc:RegisterEffect(e1)
 				end
 			end

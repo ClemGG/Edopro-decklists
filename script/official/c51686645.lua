@@ -1,7 +1,6 @@
 --捲怒重来
---Kendochourai
+--Revenge Rally
 --Logical Nonsense
-
 --Substitute ID
 local s,id=GetID()
 function s.initial_effect(c)
@@ -12,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCondition(s.condition)
+	e1:SetCondition(aux.StatChangeDamageStepCondition)
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
@@ -20,7 +19,7 @@ function s.initial_effect(c)
 	--Draw 1 card, or 2 cards and discard 1
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
@@ -30,11 +29,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.drop)
 	c:RegisterEffect(e2)
 end
-	--Not during damage calcuation
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
-end
-	--Become equip card
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local c=e:GetHandler()
@@ -68,7 +62,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
-	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	e:GetHandler():RegisterFlagEffect(id,RESET_PHASE|PHASE_END,EFFECT_FLAG_OATH,1)
 end
 	--Equip to opponent's monster, it gains 500 ATK/DEF
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -78,14 +72,14 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(1-tp) then
 		Duel.Equip(tp,c,tc)
-		--ATK up
+		--Increase the ATK by 500
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_EQUIP)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(500)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		c:RegisterEffect(e1)
-		--DEF up
+		--Increase the DEF by 500
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		c:RegisterEffect(e2)
@@ -95,7 +89,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EFFECT_EQUIP_LIMIT)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetValue(1)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetReset(RESET_EVENT|RESETS_STANDARD)
 		c:RegisterEffect(e3)
 	else
 		c:CancelToGrave(false)
@@ -104,12 +98,12 @@ end
 	--If was sent to GY because equipped monster left the field
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetPreviousEquipTarget()
-	return e:GetHandler():IsReason(REASON_LOST_TARGET) and not ec:IsLocation(LOCATION_ONFIELD+LOCATION_OVERLAY)
+	return e:GetHandler():IsReason(REASON_LOST_TARGET) and not ec:IsLocation(LOCATION_ONFIELD|LOCATION_OVERLAY)
 end
 	--Activation legality
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if e:GetHandler():GetFlagEffect(id)~=0 then
+	if e:GetHandler():HasFlagEffect(id) then
 		e:SetLabel(1)
 		e:GetHandler():ResetFlagEffect(id)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
@@ -125,7 +119,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Draw(tp,2,REASON_EFFECT)~=0 then
 			Duel.ShuffleHand(tp)
 			Duel.BreakEffect()
-			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT|REASON_DISCARD)
 		end
 	else
 		Duel.Draw(tp,1,REASON_EFFECT)

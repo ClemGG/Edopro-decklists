@@ -21,14 +21,14 @@ end
 s.listed_series={0x5}
 s.toss_coin=true
 function s.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5) and c:IsAttackAbove(300)
+	return c:IsFaceup() and c:IsSetCard(SET_ARCANA_FORCE) and c:IsAttackAbove(300)
 end
 function s.ddtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil)
-	local ct=math.floor(g:GetFirst():GetAttack()/300)
+	local ct=g:GetFirst():GetAttack()//300
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,PLAYER_ALL,ct)
 end
@@ -36,14 +36,12 @@ function s.ddop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		local ct=tc:GetAttack()//300
 		local res=Duel.TossCoin(tp,1)
-		local p
-		if res==1 then
-			p=tp
-		else
-			p=1-tp
+		if res==COIN_HEADS then
+			Duel.DiscardDeck(tp,ct,REASON_EFFECT)
+		elseif res==COIN_TAILS then
+			Duel.DiscardDeck(1-tp,ct,REASON_EFFECT)
 		end
-		local ct=math.floor(tc:GetAttack()/300)
-		Duel.DiscardDeck(p,ct,REASON_EFFECT)
 	end
 end

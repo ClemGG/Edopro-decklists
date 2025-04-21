@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.pcfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_GALAXY) and not c:IsHasEffect(EFFECT_CANNOT_ATTACK)
+	return c:IsFaceup() and c:IsRace(RACE_GALAXY) and c:CanGetPiercingRush()
 end
 function s.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.pcfilter,tp,LOCATION_MZONE,0,1,nil) end
@@ -25,7 +25,7 @@ function s.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,s.pcfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(tc,true)
-	tc:AddPiercing(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,e:GetHandler())
+	tc:AddPiercing(RESETS_STANDARD_PHASE_END,e:GetHandler())
 	if not tc:IsType(TYPE_NORMAL) then return end
 	local pg=Duel.GetMatchingGroup(Card.IsCanChangePositionRush,tp,0,LOCATION_MZONE,nil)
 	if #pg==0 or not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end

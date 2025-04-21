@@ -1,10 +1,10 @@
 --エクスピュアリィ・ハピネス
---Expurery Happiness
+--Expurrely Happiness
 --Scripted by Eerie Code
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	--Xyz Summon
+	--Xyz Summon Procedure
 	Xyz.AddProcedure(c,nil,7,2,s.ovfilter,aux.Stringid(id,0))
 	--Negate the opponent's monsters' effects
 	local e1=Effect.CreateEffect(c)
@@ -28,12 +28,12 @@ function s.initial_effect(c)
 	e2:SetOperation(s.dmgop)
 	c:RegisterEffect(e2)
 end
-s.listed_series={0x18d}
+s.listed_series={SET_PURRELY}
 function s.ovfilter(c,tp,lc)
 	return c:IsFaceup() and c:IsRank(2) and c:GetOverlayCount()>=5
 end
 function s.disfilter(c)
-	return c:IsSetCard(0x18d) and c:GetOriginalLevel()==1
+	return c:IsSetCard(SET_PURRELY) and c:GetOriginalLevel()==1
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -49,21 +49,9 @@ end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsNegatableMonster,tp,0,LOCATION_MZONE,nil)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) and #g>0 then
-		for tc in g:Iter() do
-			--Negate effects
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e2)
-		end
+	if c:IsRelateToEffect(e) and c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)>0 and #g>0 then
+		--Negate theireffects
+		g:ForEach(function(tc) tc:NegateEffects(c,RESET_PHASE|PHASE_END) end)
 	end
 end
 function s.dmgcon(e,tp,eg,ep,ev,re,r,rp)

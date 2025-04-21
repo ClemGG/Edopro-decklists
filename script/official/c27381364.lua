@@ -1,5 +1,5 @@
 --スプライト・エルフ
---Splight Elf
+--Spright Elf
 --Scripted by Eerie Code
 local s,id=GetID()
 function s.initial_effect(c)
@@ -25,12 +25,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--Special Summon 1 Level/Rank/Link-2 from your GY
 	local e3=Effect.CreateEffect(c)
-	e3:SetCode(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER|TIMING_MAIN_END)
 	e3:SetCountLimit(1,id)
 	e3:SetCondition(function() return Duel.IsMainPhase() end)
 	e3:SetTarget(s.sptg)
@@ -45,7 +45,7 @@ function s.lcheck(g,lc,sumtype,tp)
 end
 function s.lkcon(e)
 	local c=e:GetHandler()
-	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsSummonType(SUMMON_TYPE_LINK)
+	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsLinkSummoned()
 end
 function s.spfilter(c,e,tp,ex)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLevel(2) or (ex and (c:IsRank(2) or c:IsLink(2))))

@@ -1,6 +1,5 @@
 --覇王門無限
 --Supreme King Gate Infinity
-
 local s,id=GetID()
 function s.initial_effect(c)
 	--Enable pendulum summon
@@ -27,7 +26,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.rctg)
 	e2:SetOperation(s.rcop)
 	c:RegisterEffect(e2)
-	--Special summon 1 dragon Xyz or pendulum monster from extra deck
+	--Special Summon 1 Dragon Xyz or Pendulum monster from your Extra Deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
@@ -49,7 +48,7 @@ function s.initial_effect(c)
 	e4:SetOperation(s.penop)
 	c:RegisterEffect(e4)
 end
-s.listed_names={13331639}
+s.listed_names={CARD_ZARC}
 function s.splimcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>0
 end
@@ -57,7 +56,7 @@ function s.splimit(e,c,sump,sumtype,sumpos,targetp)
 	return (sumtype&SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
 end
 function s.rccon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsCode,13331639),tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(aux.FaceupFilter(Card.IsCode,CARD_ZARC),tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.rcfilter(c)
 	return c:IsFaceup() and c:GetAttack()>0
@@ -79,7 +78,8 @@ function s.desfilter(c,e,tp,mc)
 	return c:IsFaceup() and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,Group.FromCards(c,mc))-- and Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc))>0
 end
 function s.spfilter(c,e,tp,mg)
-	return c:IsType(TYPE_XYZ+TYPE_PENDULUM) and c:IsRace(RACE_DRAGON) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_XYZ|TYPE_PENDULUM) and c:IsRace(RACE_DRAGON)
+		and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -106,19 +106,19 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 			sc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e2:SetReset(RESET_EVENT|RESETS_STANDARD)
 			sc:RegisterEffect(e2,true)
 			--ATK/DEF becomes 0
 			local e3=Effect.CreateEffect(c)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_SET_ATTACK_FINAL)
 			e3:SetValue(0)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e3:SetReset(RESET_EVENT|RESETS_STANDARD)
 			sc:RegisterEffect(e3,true)
 			local e4=e3:Clone()
 			e4:SetCode(EFFECT_SET_DEFENSE_FINAL)

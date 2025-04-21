@@ -1,4 +1,4 @@
---Japanese name
+--ミメシスエレファント
 --Mimesis Elephant
 --scripted by Naim
 local s,id=GetID()
@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:IsHasType(EFFECT_TYPE_ACTIVATE) 
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:IsHasType(EFFECT_TYPE_ACTIVATE)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPE_MONSTER+TYPE_EFFECT,0,2000,2,RACE_BEAST,ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,0)
 end
@@ -44,7 +44,7 @@ function s.chfilter(c,e)
 	return c:IsFaceup() and c:IsCanBeEffectTarget(e)
 end
 function s.tgfilter(c,rc,att)
-	return c:IsDifferentRace(rc) and c:IsDifferentAttribute(att)
+	return c:IsDifferentRace(rc) and c:IsAttributeExcept(att)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsFaceup() and chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,e:GetLabel()) end
@@ -63,21 +63,21 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local rc,att=e:GetLabel()
 	local c=e:GetHandler()
 	if tc:IsDifferentRace(rc) then
-		-- Change monster type
+		--Change monster type
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_RACE)
 		e1:SetValue(rc)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 	end
-	if tc:IsDifferentAttribute(att) then
-		-- Change attribute
+	if tc:IsAttributeExcept(att) then
+		--Change attribute
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
 		e1:SetValue(att)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 	end
 end

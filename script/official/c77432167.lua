@@ -1,5 +1,5 @@
 --太陽神の合一
---One with the Sun God
+--Sun God Unification
 --Scripted by AlphaKretin
 local s,id=GetID()
 function s.initial_effect(c)
@@ -14,6 +14,7 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetCondition(s.actcon)
+	e2:SetDescription(aux.Stringid(id,2))
 	c:RegisterEffect(e2)
 	--Increase ATK
 	local e3=Effect.CreateEffect(c)
@@ -56,7 +57,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,cost)
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsCode(CARD_RA) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+	return c:IsFaceup() and c:IsCode(CARD_RA) and c:IsSpecialSummoned()
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFlagEffect(tp,id)==0 end

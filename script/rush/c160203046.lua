@@ -1,5 +1,5 @@
 -- ローリング・ネバーダイ
--- Rolling Never Die
+--Rolled Sticky Save
 
 local s,id=GetID()
 function s.initial_effect(c)
@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FAIRY) and c:IsPosition(POS_FACEUP_ATTACK) 
+	return c:IsFaceup() and c:IsRace(RACE_FAIRY) and c:IsPosition(POS_FACEUP_ATTACK)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetAttacker():IsControler(1-tp) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -41,7 +41,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 		local rec=tc:GetAttack()
 		Duel.Recover(1-tp,rec,REASON_EFFECT)

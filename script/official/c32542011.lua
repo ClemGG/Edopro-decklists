@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(7) and c:IsAttribute(ATTRIBUTE_WATER+ATTRIBUTE_FIRE)
+	return c:IsFaceup() and c:IsLevelAbove(7) and c:IsAttribute(ATTRIBUTE_WATER|ATTRIBUTE_FIRE)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -25,7 +25,7 @@ function s.cfilter2(c,att)
 end
 function s.spfilter(c,tid,e,tp)
 	local re=c:GetReasonEffect()
-	return c:GetTurnID()==tid and c:IsReason(REASON_COST) and re and re:IsActivated() and re:IsActiveType(TYPE_MONSTER)
+	return c:GetTurnID()==tid and c:IsReason(REASON_COST) and re and re:IsActivated() and re:IsMonsterEffect()
 		and c:IsAttribute(ATTRIBUTE_WATER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,9 +71,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.HintSelection(g,true)
 			if break_chk then Duel.BreakEffect() end
-			if Duel.Destroy(g,REASON_EFFECT)>0 and Duel.GetFieldGroup(tp,LOCATION_HAND,0)>0 then
+			if Duel.Destroy(g,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
 				Duel.BreakEffect()
-				Duel.DiscardHand(tp,nil,1,1,REASON_DISCARD+REASON_EFFECT)
+				Duel.DiscardHand(tp,nil,1,1,REASON_DISCARD|REASON_EFFECT)
 			end
 		end
 	end

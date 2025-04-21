@@ -67,9 +67,11 @@ if not ActionDuel then
 		e6:SetTarget(aux.TargetBoolFunction(Card.IsActionSpell))
 		Duel.RegisterEffect(e6,0)
 		local e7=e6:Clone()
+		e7:SetDescription(aux.Stringid(id,7))
 		e7:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 		Duel.RegisterEffect(e7,0)
 		local e8=e6:Clone()
+		e8:SetDescription(aux.Stringid(id,7))
 		e8:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 		Duel.RegisterEffect(e8,0)
 		--cover
@@ -115,7 +117,7 @@ if not ActionDuel then
 			Duel.Hint(HINT_MESSAGE,0,aux.Stringid(id,6))
 			Duel.Hint(HINT_MESSAGE,1,aux.Stringid(id,6))
 			local coin=Duel.TossCoin(0,1)
-			table.remove(actionFieldToBeUsed,coin+1)
+			table.remove(actionFieldToBeUsed,coin==COIN_HEADS and 2 or 1)
 		end
 		Duel.Hint(HINT_CARD,0,actionFieldToBeUsed[1])
 		for p=0,1 do
@@ -193,7 +195,7 @@ if not ActionDuel then
 	function ActionDuel.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
 		local originalField=e:GetLabelObject():GetLabelObject()
-		local t=string.find(originalField.af,'m') and originalField.tableAction or (c.tableAction and c.tableAction or (originalField.tableAction and originalField.tableAction or tableActionGeneric))
+		local t=(string.find(originalField.af,'m') and originalField.tableAction) or c.tableAction or originalField.tableAction or tableActionGeneric
 		if chk==0 then return #t>0 end
 		ac=Duel.GetRandomNumber(1,#t)
 		e:SetLabel(t[ac])
@@ -210,21 +212,21 @@ if not ActionDuel then
 				tokenp=rps
 			end
 			if Duel.GetRandomNumber(0,1)==0 then table.insert(hintp,1-tp) end
-		elseif Duel.TossCoin(tp,1)==1 then
+		elseif Duel.TossCoin(tp,1)==COIN_HEADS then
 			tokenp=tp
 		end
 		if Duel.GetRandomNumber(0,1)==0 then table.insert(hintp,tp) end
 		for _,p in ipairs(hintp) do
 			Duel.Hint(HINT_MESSAGE,p,aux.Stringid(id,2))
-			Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(p,id,RESET_PHASE|PHASE_END,0,1)
 		end
 		if tokenp then
 			token=Duel.CreateToken(tokenp,e:GetLabel())
 			Duel.SendtoHand(token,nil,REASON_EFFECT)
 			if string.find(originalField.af,'m') then
 				table.remove(originalField.tableAction,e:GetLabel())
-				Duel.RegisterFlagEffect(tp,320,RESET_PHASE+PHASE_END,0,1)
-				Duel.RegisterFlagEffect(1-tp,320,RESET_PHASE+PHASE_END,0,1)
+				Duel.RegisterFlagEffect(tp,320,RESET_PHASE|PHASE_END,0,1)
+				Duel.RegisterFlagEffect(1-tp,320,RESET_PHASE|PHASE_END,0,1)
 			end
 		end
 		if token and Duel.IsExistingMatchingCard(Card.IsActionCard,tokenp,LOCATION_HAND,0,2,nil)

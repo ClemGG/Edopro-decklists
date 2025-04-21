@@ -11,13 +11,13 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCondition(s.condition)
-	e1:SetCost(aux.bfgcost)
+	e1:SetCost(Cost.SelfBanish)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==1-tp
+	return Duel.IsTurnPlayer(1-tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
@@ -52,13 +52,13 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		local loc=LOCATION_SZONE
 		if (tpe&TYPE_FIELD)~=0 then
 			loc=LOCATION_FZONE
-			local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+			local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 			if Duel.IsDuelType(DUEL_1_FIELD) then
 				if fc then Duel.Destroy(fc,REASON_RULE) end
-				fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc and Duel.Destroy(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 			else
-				fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 			end
 		end

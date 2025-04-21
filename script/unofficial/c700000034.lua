@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 end
-s.listed_series={0x7}
+s.listed_series={SET_ANCIENT_GEAR}
 s.listed_names={CARD_POLYMERIZATION}
 function s.cfilter(c)
 	return c:IsCode(CARD_POLYMERIZATION) and c:IsAbleToGraveAsCost()
@@ -28,11 +28,11 @@ function s.matfilter(c,e,tp,fc,se)
 	return c:IsMonster() and c:IsCanBeFusionMaterial(fc) and (not se or not c:IsImmuneToEffect(se)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.spfilter(c,e,tp,rg,se)
-	if not c:IsType(TYPE_FUSION) or not c:IsSetCard(0x7) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) then return false end
+	if not c:IsType(TYPE_FUSION) or not c:IsSetCard(SET_ANCIENT_GEAR) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) then return false end
 	local minc=c.min_material_count
 	local maxc=c.max_material_count
 	if not minc then return false end
-	local mg2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp,c,se)
+	local mg2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE,0,nil,e,tp,c,se)
 	if Duel.IsPlayerAffectedByEffect(tp,69832741) then
 		local maxc2=math.min(#rg,maxc)
 		local mft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -76,7 +76,7 @@ function s.resconse2(fc,rg,mft)
 				local exct=sg:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)
 				Fusion.CheckExact=#sg
 				local res=Duel.GetLocationCountFromEx(tp,tp,rg)>=exct and (not ect or exct<(ect-1))
-					and rg:FilterCount(aux.MZFilter,nil,tp)+mft>=sg:FilterCount(aux.NOT(Card.IsLocation),nil,LOCATION_EXTRA)
+					and rg:FilterCount(Card.IsInMainMZone,nil,tp)+mft>=sg:FilterCount(aux.NOT(Card.IsLocation),nil,LOCATION_EXTRA)
 					and fc:CheckFusionMaterial(sg,nil,tp)
 				Fusion.CheckExact=nil
 				return res
@@ -86,7 +86,7 @@ function s.rmfilter(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsAbleToRemove() and aux.SpElimFilter(c,true)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rg=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local rg=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE|LOCATION_GRAVE,0,nil)
 	if chk==0 then return Duel.GetUsableMZoneCount(tp)>-1 and Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,rg) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -97,12 +97,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local fc=Duel.GetFirstTarget()
-	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_MZONE|LOCATION_GRAVE,0,nil)
 	if not fc or not fc:IsRelateToEffect(e) or not s.spfilter(fc,e,tp,rg,e) then return end
 	local minc=fc.min_material_count
 	local maxc=fc.max_material_count
 	local rsg
-	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.matfilter),tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp,fc,e)
+	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.matfilter),tp,LOCATION_DECK|LOCATION_EXTRA|LOCATION_GRAVE,0,nil,e,tp,fc,e)
 	if Duel.IsPlayerAffectedByEffect(tp,69832741) then
 		local maxc2=math.min(#rg,maxc)
 		local mft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -132,7 +132,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	mg:Sub(rsg)
 	local matg=aux.SelectUnselectGroup(mg,e,tp,ct,ct,s.rescon2(fc,mft,exft),1,tp,HINTMSG_SPSUMMON)
 	if Duel.SpecialSummon(matg,0,tp,tp,false,false,POS_FACEUP) > 0 then
-		for tc in aux.Next(matg) do
+		for tc in matg:Iter() do
 			if tc:IsLocation(LOCATION_MZONE) then
 				s.disop(e,tp,eg,ep,ev,re,r,rp,tc)
 			end

@@ -1,18 +1,18 @@
--- ＢＦ－雪撃のチヌーク
--- Blackwing - Chinook the Snowstrike
--- Scripted by Hatter
+--ＢＦ－雪撃のチヌーク
+--Blackwing - Chinook the Snow Blast
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Send 1 "Blackwing" Synchro Monster or "Black-Winged Dragon" to the GY
+	--Send 1 "Blackwing" Synchro Monster or "Black-Winged Dragon" to the GY
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_ATKCHANGE+CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e1:SetRange(LOCATION_MZONE|LOCATION_HAND)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(aux.NOT(s.quickcon))
-	e1:SetCost(s.tgcost)
+	e1:SetCost(Cost.SelfToGrave)
 	e1:SetTarget(s.tgtg)
 	e1:SetOperation(s.tgop)
 	c:RegisterEffect(e1)
@@ -20,19 +20,14 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP|TIMINGS_CHECK_MONSTER|TIMING_MAIN_END)
 	e2:SetCondition(s.quickcon)
 	c:RegisterEffect(e2)
 end
 s.listed_names={CARD_BLACK_WINGED_DRAGON}
-s.listed_series={0x33}
-function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(c,REASON_COST)
-end
+s.listed_series={SET_BLACKWING}
 function s.tgfilter(c)
-	return c:IsAbleToGrave() and ((c:IsSetCard(0x33) and c:IsType(TYPE_SYNCHRO)) or c:IsCode(CARD_BLACK_WINGED_DRAGON))
+	return c:IsAbleToGrave() and ((c:IsSetCard(SET_BLACKWING) and c:IsType(TYPE_SYNCHRO)) or c:IsCode(CARD_BLACK_WINGED_DRAGON))
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
@@ -49,18 +44,18 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if #g<1 or Duel.SendtoGrave(g,REASON_EFFECT)<1 or not g:GetFirst():IsLocation(LOCATION_GRAVE) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		-- Negate effects
+		--Negate effects
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)
 		tc:RegisterEffect(e2)
-		-- Reduce ATK
+		--Reduce ATK
 		local e3=e1:Clone()
 		e3:SetCode(EFFECT_UPDATE_ATTACK)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -73,5 +68,5 @@ function s.quickconfilter(c)
 end
 function s.quickcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.quickconfilter,tp,LOCATION_MZONE,0,1,nil)
-		and (Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated())
+		and aux.StatChangeDamageStepCondition()
 end

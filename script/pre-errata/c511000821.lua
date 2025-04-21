@@ -1,4 +1,5 @@
 --王家の神殿
+--Temple of the Kings (Pre-Errata)
 local s,id=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -13,6 +14,7 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_SZONE,0)
+	e2:SetDescription(aux.Stringid(id,1))
 	c:RegisterEffect(e2)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
@@ -27,7 +29,7 @@ function s.initial_effect(c)
 end
 s.listed_names={89194033}
 function s.cfilter(c,e,tp)
-	return c:IsFaceup() and c:IsCode(89194033) and c:IsAbleToGraveAsCost() 
+	return c:IsFaceup() and c:IsCode(89194033) and c:IsAbleToGraveAsCost()
 		and Duel.IsExistingMatchingCard(s.filter,tp,0x43,0,1,nil,e,tp,c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -28,13 +28,13 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(s.afilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.IsTurnPlayer(tp)
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldCard(tp,LOCATION_SZONE,5) and 
-		Duel.GetFieldCard(1-tp,LOCATION_SZONE,5) end
-	local tc1=Duel.GetFieldCard(tp,LOCATION_SZONE,5):GetCounter(0x91)
-	local tc2=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5):GetCounter(0x91)
+	if chk==0 then return Duel.GetFieldCard(tp,LOCATION_FZONE,0) and
+		Duel.GetFieldCard(1-tp,LOCATION_FZONE,0) end
+	local tc1=Duel.GetFieldCard(tp,LOCATION_FZONE,0):GetCounter(0x91)
+	local tc2=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0):GetCounter(0x91)
 	local dam=0
 	Duel.SetTargetPlayer(1-tp)
 	if tc1>tc2 then dam=(tc1-tc2)*200

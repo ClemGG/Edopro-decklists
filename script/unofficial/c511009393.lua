@@ -73,13 +73,13 @@ function s.actfilter(c,tp,eg,ep,ev,re,r,rp)
 	local condition=te:GetCondition()
 	local cost=te:GetCost()
 	local target=te:GetTarget()
-	return c:IsSpell() and c:IsType(TYPE_CONTINUOUS) and (not condition or condition(te,tp,eg,ep,ev,re,r,rp)) 
+	return c:IsSpell() and c:IsType(TYPE_CONTINUOUS) and (not condition or condition(te,tp,eg,ep,ev,re,r,rp))
 		and (not cost or cost(te,tp,eg,ep,ev,re,r,rp,0))
 		and (not target or target(te,tp,eg,ep,ev,re,r,rp,0))
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and s.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_SZONE,0,1,nil) 
+	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_SZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(s.actfilter,tp,LOCATION_HAND,0,1,nil,tp,eg,ep,ev,re,r,rp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_SZONE,0,1,1,nil)
@@ -104,13 +104,13 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ClearTargetCard()
 				e:SetCategory(te:GetCategory())
 				e:SetProperty(te:GetProperty())
-				local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+				local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 				if Duel.IsDuelType(DUEL_1_FIELD) then
 					if fc then Duel.Destroy(fc,REASON_RULE) end
-					fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.Destroy(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				else
-					fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				end
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

@@ -13,14 +13,14 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	return tc:GetCounter(0x91)>1
 end
 function s.desfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x24) and c:IsDestructable()
+	return c:IsFaceup() and c:IsSetCard(SET_SCRAP) and c:IsDestructable()
 end
 function s.sfilter(c)
-	return c:IsSetCard(0x24) and c:IsMonster() and c:IsAbleToGrave()
+	return c:IsSetCard(SET_SCRAP) and c:IsMonster() and c:IsAbleToGrave()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.desfilter(chkc) end

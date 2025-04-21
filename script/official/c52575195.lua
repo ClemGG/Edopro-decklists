@@ -39,7 +39,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tc=e:GetLabelObject()
 	local label=e:GetLabel()
-	if chk==0 then return tc:IsAbleToRemove() and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or c:IsInMainMZone())
+	if chk==0 then return tc:IsAbleToRemove() and Duel.GetMZoneCount(tp,c)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and (label==0 or (label==1 and not c:IsStatus(STATUS_CHAINING))) end
 	Duel.SetTargetCard(tc)
@@ -49,15 +49,15 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.Remove(tc,tc:GetPosition(),REASON_EFFECT+REASON_TEMPORARY)>0 then
+	if tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.Remove(tc,tc:GetPosition(),REASON_EFFECT|REASON_TEMPORARY)>0 then
 		--Return it during your next Standby Phase
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetCode(EVENT_PHASE|PHASE_STANDBY)
 		e1:SetRange(LOCATION_REMOVED)
 		e1:SetCountLimit(1)
-		if Duel.GetTurnPlayer()==tp then
-			if Duel.GetCurrentPhase()==PHASE_DRAW then
+		if Duel.IsTurnPlayer(tp) then
+			if Duel.IsPhase(PHASE_DRAW) then
 				e1:SetLabel(Duel.GetTurnCount())
 			else
 				e1:SetLabel(Duel.GetTurnCount()+2)
@@ -65,7 +65,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			e1:SetLabel(Duel.GetTurnCount()+1)
 		end
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		e1:SetCondition(s.retcon)
 		e1:SetOperation(s.retop)
 		tc:RegisterEffect(e1)

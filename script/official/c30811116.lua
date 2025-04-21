@@ -1,7 +1,8 @@
 --幻獣機レイステイルス
+--Mecha Phantom Beast Stealthray
 local s,id=GetID()
 function s.initial_effect(c)
-	--level
+	--Gains the levels of all "Mecha Phantom Beast Token"
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -9,7 +10,7 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
 	e1:SetValue(s.lvval)
 	c:RegisterEffect(e1)
-	--
+	--Cannot be destroyed by battle or effects while you control a Token
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -21,17 +22,17 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e3)
-	--token
+	--Special Summon 1 "Mecha Phantom Beast Token"
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,0))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_BATTLE_DAMAGE)
-	e4:SetCondition(s.spcon)
+	e4:SetCondition(function(_,tp,_,ep) return ep==1-tp end)
 	e4:SetTarget(s.sptg)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
-	--destroy
+	--Destroy 1 Spell/Trap on the field
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(id,1))
 	e5:SetCategory(CATEGORY_DESTROY)
@@ -46,14 +47,13 @@ function s.initial_effect(c)
 end
 s.listed_names={TOKEN_MECHA_PHANTOM_BEAST}
 function s.lvval(e,c)
-	local tp=c:GetControler()
-	return Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_MZONE,0,nil,TOKEN_MECHA_PHANTOM_BEAST):GetSum(Card.GetLevel)
+	return Duel.GetMatchingGroup(aux.FaceupFilter(Card.IsCode,TOKEN_MECHA_PHANTOM_BEAST),c:GetControler(),LOCATION_MZONE,0,nil):GetSum(Card.GetLevel)
+end
+function s.tknfilter(c)
+	return c:IsType(TYPE_TOKEN) or c:IsOriginalType(TYPE_TOKEN)
 end
 function s.indcon(e)
-	return Duel.IsExistingMatchingCard(Card.IsType,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,TYPE_TOKEN)
-end
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp
+	return Duel.IsExistingMatchingCard(s.tknfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -61,8 +61,8 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,TOKEN_MECHA_PHANTOM_BEAST,0x101b,TYPES_TOKEN,0,0,3,RACE_MACHINE,ATTRIBUTE_WIND) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,TOKEN_MECHA_PHANTOM_BEAST,SET_MECHA_PHANTOM_BEAST,TYPES_TOKEN,0,0,3,RACE_MACHINE,ATTRIBUTE_WIND) then
 		local token=Duel.CreateToken(tp,TOKEN_MECHA_PHANTOM_BEAST)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -81,7 +81,7 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end

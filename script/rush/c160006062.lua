@@ -1,9 +1,8 @@
--- アタック減俸
--- Attack Salary Cut
-
+--アタック減俸
+--Salary Slash
 local s,id=GetID()
 function s.initial_effect(c)
-	--change pos
+	--lose 400 ATK
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCategory(CATEGORY_POSITION)
@@ -21,7 +20,7 @@ end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	local ac=Duel.GetAttacker()
-	return tc and tc:IsFaceup() and tc:IsControler(tp) and ac:IsControler(1-tp) and ac:IsLevelBelow(8) 
+	return tc and tc:IsFaceup() and tc:IsControler(tp) and ac:IsControler(1-tp) and ac:IsLevelBelow(8)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Duel.GetAttackTarget()
@@ -38,8 +37,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(-400)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffectRush(e1)
+		e1:SetReset(RESETS_STANDARD_PHASE_END)
+		tc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)

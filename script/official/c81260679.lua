@@ -1,31 +1,31 @@
--- オオヒメの御巫
--- Mikanko of the Oohime
--- Scripted by Hatter
+--オオヒメの御巫
+--Ohime the Manifested Mikanko
+--Scripted by Hatter
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	-- Cannot be destroyed by battle
+	--Cannot be destroyed by battle
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	-- Reflect battle damage
+	--Reflect battle damage
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_REFLECT_BATTLE_DAMAGE)
 	c:RegisterEffect(e2)
-	-- Search 1 "Mikanko" card
+	--Search 1 "Mikanko" card
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_HANDES)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,id)
-	e3:SetCost(s.thcost)
+	e3:SetCost(Cost.SelfReveal)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
-	-- Equip 1 Equip Spell
+	--Equip 1 Equip Spell
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,1))
 	e4:SetCategory(CATEGORY_EQUIP)
@@ -33,21 +33,16 @@ function s.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E|TIMING_MAIN_END)
 	e4:SetCountLimit(1,{id,1})
-	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E+TIMING_MAIN_END)
 	e4:SetTarget(s.eqtg)
 	e4:SetOperation(s.eqop)
 	c:RegisterEffect(e4)
 end
-s.listed_names={16310544,id}
-s.listed_series={0x18e}
-function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return not c:IsPublic() end
-	Duel.ConfirmCards(1-tp,c)
-end
+s.listed_names={16310544,id} --"Mikanko Kagura"
+s.listed_series={SET_MIKANKO}
 function s.thfilter(c)
-	return c:IsSetCard(0x18e) and c:IsAbleToHand() and not c:IsCode(id)
+	return c:IsSetCard(SET_MIKANKO) and c:IsAbleToHand() and not c:IsCode(id)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -61,14 +56,14 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleHand(tp)
 		Duel.BreakEffect()
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT|REASON_DISCARD,nil)
 	end
 end
 function s.eqtcfilter(c,ec)
 	return c:IsFaceup() and ec:CheckEquipTarget(c)
 end
 function s.eqfilter(c,tp)
-	return c:IsType(TYPE_EQUIP) and c:CheckUniqueOnField(tp) and Duel.IsExistingMatchingCard(s.eqtcfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
+	return c:IsEquipSpell() and c:CheckUniqueOnField(tp) and Duel.IsExistingMatchingCard(s.eqtcfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.eqfilter(chkc,tp) end
@@ -76,7 +71,7 @@ function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingTarget(s.eqfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local g=Duel.SelectTarget(tp,s.eqfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,ec,1,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,tp,0)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=Duel.GetFirstTarget()

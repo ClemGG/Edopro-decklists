@@ -4,6 +4,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	--flip
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP)
 	e1:SetTarget(s.target)
@@ -22,7 +23,7 @@ function s.filter2(c)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	Duel.SendtoDeck(rg,nil,0,REASON_EFFECT)
+	Duel.SendtoDeck(rg,nil,SEQ_DECKTOP,REASON_EFFECT)
 	rg=Duel.GetOperatedGroup():Match(s.filter2,nil)
 	local ct1=rg:FilterCount(Card.IsControler,nil,tp)
 	local ct2=#rg-ct1
@@ -74,7 +75,7 @@ function s.sp(e,tp,ct)
 		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	end
 	if conf-#g>0 then
-		Duel.DiscardDeck(tp,conf-#g,REASON_EFFECT+REASON_REVEAL)
+		Duel.DiscardDeck(tp,conf-#g,REASON_EFFECT|REASON_EXCAVATE)
 	end
 	return g
 end

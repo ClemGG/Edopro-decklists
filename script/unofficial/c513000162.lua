@@ -26,6 +26,7 @@ function s.initial_effect(c)
 	e3:SetCode(EFFECT_SET_ATTACK)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(function(e) return e:GetHandler():GetBattleTarget() end)
 	e3:SetValue(s.atkval)
 	c:RegisterEffect(e3)
 	--negate
@@ -46,7 +47,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 	aux.GlobalCheck(s,function()
 		--spsummon proc
-		local e2=Effect.CreateEffect(c) 
+		local e2=Effect.CreateEffect(c)
 		e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_PHASE+PHASE_END)
@@ -63,8 +64,8 @@ function s.spop(e,tp,c)
 	local g=Duel.GetMatchingGroup(s.spfilter1,Duel.GetTurnPlayer(),LOCATION_MZONE,0,nil)
 	local rc=g:GetFirst()
 	while rc do
-		if rc:GetFlagEffect(id)==0 then 
-			local e1=Effect.CreateEffect(rc)	
+		if rc:GetFlagEffect(id)==0 then
+			local e1=Effect.CreateEffect(rc)
 			e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE_START+PHASE_STANDBY)
@@ -74,21 +75,21 @@ function s.spop(e,tp,c)
 			e1:SetLabel(0)
 			e1:SetOperation(s.spop2)
 			rc:RegisterEffect(e1)
-			rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+			rc:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD,0,1)
 		end
 		rc=g:GetNext()
 	end
 end
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.IsTurnPlayer(tp)
 end
 function s.spop2(e,tp,c)
 	local c=e:GetHandler()
 	if c:GetControler()~=Duel.GetTurnPlayer() then return end
 	local ct=e:GetLabel()
-	if c:GetFlagEffect(id)~=0 and ct==8 then 
-		c:RegisterFlagEffect(100000111,RESET_EVENT+RESETS_STANDARD,0,1) 
-	else	
+	if c:GetFlagEffect(id)~=0 and ct==8 then
+		c:RegisterFlagEffect(100000111,RESET_EVENT|RESETS_STANDARD,0,1)
+	else
 		e:SetLabel(ct+1)
 	end
 end
@@ -110,7 +111,7 @@ function s.efilter(e,te)
 end
 function s.atkval(e,c)
 	local bc=c:GetBattleTarget()
-	return bc and bc:GetAttack()+1000
+	return bc:IsHasEffect(21208154) and bc:IsAttack(0) and c:GetAttack() or bc:GetAttack()+1000
 end
 function s.distg(e,c)
 	return e:GetHandler():GetBattleTarget()==c

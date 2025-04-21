@@ -1,5 +1,5 @@
 --碧牙の爆速竜
---Blue-Tooth Burst Dragon
+--Blue-Fang Burst Dragon
 --scripted by Naim
 local s,id=GetID()
 function s.initial_effect(c)
@@ -19,26 +19,30 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
 end
 function s.desfilter(c)
-	return c:IsFaceup() and c:IsAttackBelow(1500)
+	return c:IsFaceup() and c:IsAttackBelow(1500) and c:IsNotMaximumModeSide()
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.FilterMaximumSideFunctionEx(s.desfilter),tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,tp,LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,e:GetHandler(),1,tp,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	--Requirement
 	if Duel.DiscardDeck(tp,1,REASON_COST)<1 then return end
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.FilterMaximumSideFunctionEx(s.desfilter),tp,0,LOCATION_MZONE,nil)
+	--Effect
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
 	g=g:AddMaximumCheck()
+	local c=e:GetHandler()
 	if Duel.Destroy(g,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and c:IsFaceup() then
+		local og=Duel.GetOperatedGroup()
+		local ct=og:GetCount()
+		if og:IsExists(Card.WasMaximumModeSide,1,nil) then ct=1 end
 		Duel.BreakEffect()
-		local ct=Duel.GetOperatedGroup():GetCount()
+		--Increase ATK
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD_DISABLE|RESET_PHASE|PHASE_END)
 		e1:SetValue(ct*300)
 		c:RegisterEffect(e1)
 	end

@@ -1,8 +1,9 @@
---Buster Gundil the Cubic Behemoth (movie)
+--方界超獣バスター・ガンダイル (Anime)
+--Buster Gundil the Cubic Behemoth (Anime)
 Duel.LoadScript("c420.lua")
 local s,id=GetID()
 function s.initial_effect(c)
-	--spsummon
+	--Special Summon this card by stacking "Cubic Seed" monsters
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -13,19 +14,19 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
-	--atk update
+	--Gains 1000 ATK for each monster underneath
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SET_BASE_ATTACK)
 	e2:SetValue(function (e) return 1000*e:GetHandler():GetOverlayGroup():FilterCount(Card.IsMonster,nil) end)
 	c:RegisterEffect(e2)
-	--attack 3 times
+	--Can attack 3 times during each Battle Phase
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_EXTRA_ATTACK)
 	e3:SetValue(2)
 	c:RegisterEffect(e3)
-	--battle destroying
+	--Special Summon cards underneath if opponent's monster is destroyed
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -45,7 +46,7 @@ function s.initial_effect(c)
 end
 s.listed_names={CARD_VIJAM}
 function s.condition(e,tp,eg,ev,ep,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.IsTurnPlayer(tp)
 end
 function s.filter(c,sc)
 	return c:IsFaceup() and c:IsCubicSeed()
@@ -77,7 +78,7 @@ end
 function s.target0(e,tp,eg,ev,ep,re,r,rp,chk)
 	local c=e:GetHandler()
 	local mg=c:GetOverlayGroup():Filter(s.spfilter,nil,e,tp)
-	if chk==0 then return c:IsAbleToHand() and mg and #mg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>#mg 
+	if chk==0 then return c:IsAbleToHand() and mg and #mg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>#mg
 		and not (Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) and #mg>1) end
 	Duel.SetTargetCard(mg)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)
@@ -85,9 +86,8 @@ function s.target0(e,tp,eg,ev,ep,re,r,rp,chk)
 end
 function s.operation0(e,tp,eg,ev,ep,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local mg=Duel.GetTargetCards(e):Match(s.spfilter,nil,e,tp)
 	local count=#mg
-	mg:Match(s.spfilter,nil,e,tp)
 	if #mg<count then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<#mg or (Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) and #mg>1) then return end
 	if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 then

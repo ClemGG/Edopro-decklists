@@ -13,7 +13,8 @@ function s.matfil(c,e,tp,chk)
 	return c:IsOnField() and c:IsDestructable(e) and not c:IsImmuneToEffect(e)
 end
 function s.extratg(e,tp,eg,ep,ev,re,r,rp,chk)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
+	local dg=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil,e,tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,2,tp,LOCATION_ONFIELD)
 end
 function s.extraop(e,tc,tp,sg)
 	local res=Duel.Destroy(sg,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)==#sg
@@ -26,7 +27,7 @@ function s.stage2(e,tc,tp,sg,chk)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		e1:SetValue(s.atlimit)
 		tc:RegisterEffect(e1,true)
 		--Prevent direct attacks
@@ -34,7 +35,7 @@ function s.stage2(e,tc,tp,sg,chk)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		tc:RegisterEffect(e1,true)
 		--Immune
 		local e3=Effect.CreateEffect(e:GetHandler())
@@ -43,16 +44,16 @@ function s.stage2(e,tc,tp,sg,chk)
 		e3:SetCode(EFFECT_IMMUNE_EFFECT)
 		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 		e3:SetRange(LOCATION_MZONE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetReset(RESET_EVENT|RESETS_STANDARD)
 		e3:SetValue(s.efilter)
 		tc:RegisterEffect(e3,true)
 	end
 end
 function s.atlimit(e,c)
-	return not (c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsSummonLocation(LOCATION_EXTRA))
+	return not (c:IsSpecialSummoned() and c:IsSummonLocation(LOCATION_EXTRA))
 end
 function s.efilter(e,te)
 	local tc=te:GetOwner()
-	return tc:IsSummonType(SUMMON_TYPE_SPECIAL) and tc:IsSummonLocation(LOCATION_EXTRA) and tc~=e:GetHandler()
-		and te:IsActiveType(TYPE_MONSTER) and te:IsActivated() and te:GetActivateLocation()==LOCATION_MZONE
+	return tc:IsSpecialSummoned() and tc:IsSummonLocation(LOCATION_EXTRA) and tc~=e:GetHandler()
+		and te:IsMonsterEffect() and te:IsActivated() and te:GetActivateLocation()==LOCATION_MZONE
 end

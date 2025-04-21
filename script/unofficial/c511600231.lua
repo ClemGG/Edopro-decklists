@@ -76,7 +76,7 @@ function s.actlimit(e,te,tp)
 end
 function s.filter(c,tp)
 	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:GetLink()>2
-		and c:IsSummonType(SUMMON_TYPE_LINK) and c:IsControler(1-tp)
+		and c:IsLinkSummoned() and c:IsControler(1-tp)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.filter,1,nil,tp)
@@ -101,6 +101,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetDescription(aux.Stringid(id,0))
 		tc:RegisterEffect(e1)
 	end
 end

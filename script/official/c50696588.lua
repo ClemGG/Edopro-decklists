@@ -3,8 +3,9 @@
 --Scripted by Eerie Code and edo9300
 local s,id=GetID()
 function s.initial_effect(c)
-	--activate
+	--Make the opponent use only 1 Main Monster Zone
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.target)
@@ -19,6 +20,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(zone>>16)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,id)>0 then return end
 	local zone=e:GetLabel()
 	local nseq=math.log(zone,2)
 	if not Duel.CheckLocation(1-tp,LOCATION_MZONE,nseq) then return end
@@ -28,7 +30,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_FORCE_MZONE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
-	e1:SetValue(zone|0x60)
+	e1:SetValue(zone|ZONES_EMZ)
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1) 
+	e2:SetCountLimit(1)
 	e2:SetCondition(s.atkcon)
 	e2:SetTarget(s.atktg)
 	e2:SetOperation(s.atkop)
@@ -32,9 +32,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.sctg(tp)
-	if not Duel.GetFieldCard(1-tp,LOCATION_SZONE,5) or not Duel.GetFieldCard(tp,LOCATION_SZONE,5) then return false end
-	local tc1=Duel.GetFieldCard(tp,LOCATION_SZONE,5):GetCounter(0x91)
-	local tc2=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5):GetCounter(0x91)
+	if not Duel.GetFieldCard(1-tp,LOCATION_FZONE,0) or not Duel.GetFieldCard(tp,LOCATION_FZONE,0) then return false end
+	local tc1=Duel.GetFieldCard(tp,LOCATION_FZONE,0):GetCounter(0x91)
+	local tc2=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0):GetCounter(0x91)
 	return tc1>tc2
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
@@ -49,19 +49,19 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateAttack()
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.IsTurnPlayer(tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return s.sctg(tp) end
-	local tc1=Duel.GetFieldCard(tp,LOCATION_SZONE,5):GetCounter(0x91)
-	local tc2=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5):GetCounter(0x91)
+	local tc1=Duel.GetFieldCard(tp,LOCATION_FZONE,0):GetCounter(0x91)
+	local tc2=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0):GetCounter(0x91)
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,(tc1-tc2)*100)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local tc1=Duel.GetFieldCard(tp,LOCATION_SZONE,5):GetCounter(0x91)
-	local tc2=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5):GetCounter(0x91)
+	local tc1=Duel.GetFieldCard(tp,LOCATION_FZONE,0):GetCounter(0x91)
+	local tc2=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0):GetCounter(0x91)
 	if tc1>tc2 then
 		local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 		Duel.Damage(p,(tc1-tc2)*100,REASON_EFFECT)

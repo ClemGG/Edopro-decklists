@@ -31,7 +31,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			tc=rg:GetNext()
 		end
-		if Duel.GetTurnPlayer()==tp then
+		if Duel.IsTurnPlayer(tp) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_SPSUMMON_PROC_G)
@@ -83,7 +83,7 @@ function s.retfilter(c,tp,tpe)
 end
 function s.drop1(e,tp,eg,ep,ev,re,r,rp,c,og)
 	local g=e:GetLabelObject()
-	c:RegisterFlagEffect(511001749,RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(511001749,RESET_PHASE|PHASE_END,0,1)
 	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Draw(tp,1,REASON_EFFECT)
@@ -104,9 +104,9 @@ function s.drop1(e,tp,eg,ep,ev,re,r,rp,c,og)
 			Duel.HintSelection(rg)
 			local rc=rg:GetFirst()
 			if (rc:GetType()&TYPE_FIELD) then
-				local of=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+				local of=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 				if of then Duel.Destroy(of,REASON_RULE) end
-				of=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				of=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if of and Duel.Destroy(of,REASON_RULE)==0 and Duel.SendtoGrave(of,REASON_RULE)==0 then
 					Duel.SendtoGrave(rc,REASON_RULE)
 				end
@@ -130,7 +130,7 @@ end
 function s.drop2(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(30461781,0)) then return end
 	local g=e:GetLabelObject()
-	e:GetHandler():RegisterFlagEffect(511001749,RESET_PHASE+PHASE_END,0,1)
+	e:GetHandler():RegisterFlagEffect(511001749,RESET_PHASE|PHASE_END,0,1)
 	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Draw(tp,1,REASON_EFFECT)
@@ -151,9 +151,9 @@ function s.drop2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(rg)
 			local rc=rg:GetFirst()
 			if (rc:GetType()&TYPE_FIELD) then
-				local of=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+				local of=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 				if of then Duel.Destroy(of,REASON_RULE) end
-				of=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+				of=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 				if of and Duel.Destroy(of,REASON_RULE)==0 and Duel.SendtoGrave(of,REASON_RULE)==0 then
 					Duel.SendtoGrave(rc,REASON_RULE)
 				end

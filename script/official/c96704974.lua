@@ -1,8 +1,10 @@
 --ブーギートラップ
+--Boogie Trap
 local s,id=GetID()
 function s.initial_effect(c)
-	--Activate
+	--Set 1 Trap Card from the GY
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -14,7 +16,7 @@ function s.initial_effect(c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,e:GetHandler()) end
-	Duel.DiscardHand(tp,nil,2,2,REASON_COST+REASON_DISCARD,e:GetHandler())
+	Duel.DiscardHand(tp,nil,2,2,REASON_COST|REASON_DISCARD,e:GetHandler())
 end
 function s.filter(c)
 	return c:IsTrap() and c:IsSSetable()
@@ -33,10 +35,11 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) and tc:IsSSetable() then
 		Duel.SSet(tp,tc)
 		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	end
 end

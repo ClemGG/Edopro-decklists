@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(s.handcon)
+	e2:SetDescription(aux.Stringid(id,0))
 	c:RegisterEffect(e2)
 	aux.GlobalCheck(s,function()
 		--register
@@ -46,7 +47,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetOperation(s.op)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1) 	
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 		tc=g:GetNext()
 	end
@@ -68,7 +69,7 @@ function s.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return ec:IsControler(1-tp) and ev>0 and (not re or not re:GetHandler():IsType(TYPE_XYZ))
 end
 function s.damfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1083)
+	return c:IsFaceup() and c:IsSetCard(SET_GIMMICK_PUPPET)
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.damfilter(chkc) end

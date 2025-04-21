@@ -43,7 +43,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PREDRAW)
-	e1:SetRange(LOCATION_HAND+LOCATION_DECK)
+	e1:SetRange(LOCATION_HAND|LOCATION_DECK)
 	e1:SetCountLimit(1)
 	e1:SetCondition(s.activecondition)
 	e1:SetOperation(s.activeoperation)
@@ -121,7 +121,7 @@ end
 function s.activeoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,id)
-	if not Duel.SelectYesNo(1-tp,aux.Stringid(4007,1)) or not Duel.SelectYesNo(tp,aux.Stringid(4007,1)) then
+	if not Duel.SelectYesNo(1-tp,aux.Stringid(id,0)) or not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		local sg=Duel.GetMatchingGroup(Card.IsCode,tp,0x7f,0x7f,nil,id)
 		Duel.SendtoDeck(sg,nil,-2,REASON_RULE)
 		return
@@ -147,7 +147,7 @@ function s.activeoperation(e,tp,eg,ep,ev,re,r,rp)
 end
 --normal/set
 function s.normalsetcondition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+	return Duel.IsMainPhase()
 end
 function s.normalsettarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
@@ -173,7 +173,7 @@ function s.normalsetoperation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,c)
 	if c:IsMonster() and (c:IsSummonable(true,nil) or c:IsMSetable(true,nil)) and ((Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,tmin,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>-tmin) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tmin==0)) then
 		local poi=0 --set/summon control variable
-		if c:IsSummonable(true,nil) or c:IsMSetable(true,nil) then 
+		if c:IsSummonable(true,nil) or c:IsMSetable(true,nil) then
 			poi=Duel.SelectOption(tp,1,1153)
 		elseif c:IsSummonable(true,nil) then
 			poi=0
@@ -193,7 +193,7 @@ function s.normalsetoperation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoDeck(c,tp,an,REASON_RULE)
 			forbidden[tp][an+1]=true
-			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 		else
 			--re organize forbidden list
 			for i=an+1,n do
@@ -202,7 +202,7 @@ function s.normalsetoperation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	else
 		forbidden[tp][an+1]=true
-		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 	end
 end
 --spell
@@ -233,13 +233,13 @@ function s.spelloperation(e,tp,eg,ep,ev,re,r,rp)
 			local loc=LOCATION_SZONE
 			if (tpe&TYPE_FIELD)~=0 then
 				loc=LOCATION_FZONE
-				local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+				local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 				if Duel.GetFlagEffect(tp,62765383)>0 then
 					if fc then Duel.Destroy(fc,REASON_RULE) end
-					of=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					of=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.Destroy(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				else
-					Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				end
 			end
@@ -265,7 +265,7 @@ function s.spelloperation(e,tp,eg,ep,ev,re,r,rp)
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end
 			tc:ReleaseEffectRelation(te)
-			if etc then 
+			if etc then
 				etc=g:GetFirst()
 				while etc do
 					etc:ReleaseEffectRelation(te)
@@ -278,11 +278,11 @@ function s.spelloperation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		else
 			forbidden[tp][an+1]=true
-			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 		end
 	else
 		forbidden[tp][an+1]=true
-		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 	end
 end
 --trap
@@ -335,7 +335,7 @@ function s.trapoperation(e,tp,eg,ep,ev,re,r,rp)
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end
 			tc:ReleaseEffectRelation(te)
-			if etc then 
+			if etc then
 				etc=g:GetFirst()
 				while etc do
 					etc:ReleaseEffectRelation(te)
@@ -348,11 +348,11 @@ function s.trapoperation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		else
 			forbidden[tp][an+1]=true
-			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 		end
 	else
 		forbidden[tp][an+1]=true
-		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(4002,9))
+		Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(id,1))
 	end
 end
 --[[

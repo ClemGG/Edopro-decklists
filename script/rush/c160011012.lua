@@ -1,5 +1,5 @@
 --ランプの炎皇アルコ
---Alco the Flame Emperor of the Lamp
+--Alkyl the Flame Emperor of the Lamp
 --scripted by YoshiDuels
 local s,id=GetID()
 function s.initial_effect(c)
@@ -43,7 +43,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(1000)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
 			c:RegisterEffect(e1)
 		end
 	end

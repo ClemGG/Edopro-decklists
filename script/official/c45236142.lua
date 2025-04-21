@@ -25,8 +25,8 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e3:SetCost(s.searchcost)
+	e3:SetRange(LOCATION_HAND|LOCATION_MZONE)
+	e3:SetCost(Cost.SelfToGrave)
 	e3:SetTarget(s.searchtg)
 	e3:SetOperation(s.searchop)
 	c:RegisterEffect(e3)
@@ -43,7 +43,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 s.listed_names={CARD_ADVANCED_DARK}
-s.listed_series={0x5034}
+s.listed_series={SET_ADVANCED_CRYSTAL_BEAST}
 function s.tgcon(e)
 	return not Duel.IsEnvironment(CARD_ADVANCED_DARK)
 end
@@ -57,15 +57,10 @@ function s.replaceop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+	e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
 	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 	c:RegisterEffect(e1)
-	Duel.RaiseEvent(c,EVENT_CUSTOM+47408488,e,0,tp,0,0)
-end
-function s.searchcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(c,REASON_COST)
+	Duel.RaiseEvent(c,EVENT_CUSTOM+CARD_CRYSTAL_TREE,e,0,tp,0,0)
 end
 function s.sfilter(c)
 	return c:IsCode(CARD_ADVANCED_DARK) and c:IsAbleToHand()
@@ -83,7 +78,7 @@ function s.searchop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5034) and (c:IsAbleToHand() or c:IsAbleToDeck())
+	return c:IsFaceup() and c:IsSetCard(SET_ADVANCED_CRYSTAL_BEAST) and (c:IsAbleToHand() or c:IsAbleToDeck())
 end
 function s.thdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and s.cfilter(chkc) end

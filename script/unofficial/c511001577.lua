@@ -12,8 +12,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupCost(tp,Card.IsSetCard,1,false,nil,nil,0x48) end
-	local g=Duel.SelectReleaseGroupCost(tp,Card.IsSetCard,1,1,false,nil,nil,0x48)
+	if chk==0 then return Duel.CheckReleaseGroupCost(tp,Card.IsSetCard,1,false,nil,nil,SET_NUMBER) end
+	local g=Duel.SelectReleaseGroupCost(tp,Card.IsSetCard,1,1,false,nil,nil,SET_NUMBER)
 	Duel.Release(g,REASON_COST)
 end
 function s.filter(c,tp,eg,ep,ev,re,r,rp)
@@ -22,7 +22,7 @@ function s.filter(c,tp,eg,ep,ev,re,r,rp)
 	local condition=te:GetCondition()
 	local cost=te:GetCost()
 	local target=te:GetTarget()
-	return c:IsSpell() and c:IsType(TYPE_CONTINUOUS) and (not condition or condition(te,tp,eg,ep,ev,re,r,rp)) 
+	return c:IsSpell() and c:IsType(TYPE_CONTINUOUS) and (not condition or condition(te,tp,eg,ep,ev,re,r,rp))
 		and (not cost or cost(te,tp,eg,ep,ev,re,r,rp,0))
 		and (not target or target(te,tp,eg,ep,ev,re,r,rp,0))
 end
@@ -50,13 +50,13 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			e:SetCategory(te:GetCategory())
 			e:SetProperty(te:GetProperty())
 			if tpe&TYPE_FIELD~=0 then
-				local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
+				local fc=Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)
 				if Duel.IsDuelType(DUEL_1_FIELD) then
 					if fc then Duel.Destroy(fc,REASON_RULE) end
-					fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.Destroy(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				else
-					fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+					fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 					if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then Duel.SendtoGrave(tc,REASON_RULE) end
 				end
 			end

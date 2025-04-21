@@ -49,15 +49,15 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			sg=sg:Select(tp,1,1,nil)
 		end
-		sg=sg:AddMaximumCheck()
+		local dg=sg:AddMaximumCheck()
 		if #sg>0 then
-			Duel.HintSelection(sg)
+			Duel.HintSelection(dg)
 			local tc=sg:GetFirst()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(tc:GetAttack())
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetReset(RESETS_STANDARD_PHASE_END)
 			c:RegisterEffect(e1)
 			Duel.Destroy(sg,REASON_EFFECT)
 		end
